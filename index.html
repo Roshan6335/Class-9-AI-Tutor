@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="hi"> <!-- Default language, will be updated by JS -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 9 Hindi AI Guru - Website Prototype</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pw-purple: #5A007B; --pw-blue: #007BFF; --pw-pink-accent: #E91E63;
+            --pw-text-dark: #333333; --pw-text-light: #FFFFFF; --pw-bg-light: #FFFFFF;
+            --pw-bg-grey: #f0f2f5; /* Changed to a softer grey */
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+            --card-hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --border-radius-main: 14px; --border-radius-small: 10px;
+            --font-primary: 'Poppins', 'Noto Sans Devanagari', sans-serif; /* Poppins for English, Noto for Hindi */
+        }
+        body {
+            font-family: var(--font-primary);
+            margin: 0;
+            background-color: var(--pw-bg-grey); /* Site background */
+            color: var(--pw-text-dark);
+            display: flex;
+            flex-direction: column; /* For potential header/footer outside app container */
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px; /* Padding for the overall page */
+            box-sizing: border-box;
+            background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%); /* Engaging gradient bg */
+        }
+        .website-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--pw-purple);
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .app-container { /* This remains our "mobile app" viewport */
+            width: 100%;
+            max-width: 420px; /* Slightly wider */
+            min-height: 750px;
+            max-height: 90vh;
+            background-color: var(--pw-bg-light);
+            border-radius: 25px; /* More rounded for modern feel */
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position:relative;
+        }
+        .screen { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s ease-in-out; width: 100%; height: calc(100% - 50px); /* Banner adjusted */ }
+        .screen.active { display: flex; }
+        .screen.no-banner-adjustment { height: 100%; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0);} }
+
+        .header { /* ... same header style but ensure font respects language ... */
+            background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: var(--pw-text-light); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; font-family: var(--font-primary); }
+        .header h1, .header h2 { margin: 0; font-size: 1.2em; font-weight: 500; }
+        .header .back-button { background: none; border: none; color: var(--pw-text-light); font-size: 1.7em; cursor: pointer; margin-right: 10px; padding: 5px;}
+        .header .profile-button { /* ... same ... */ }
+        .content { padding: 20px; flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; font-family: var(--font-primary); }
+
+        /* Language Selector Screen */
+        #language-selector-screen {
+            display: flex; /* Active by default initially */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--pw-purple), #8E44AD);
+            color: white; text-align:center; padding:30px;
+        }
+        #language-selector-screen h1 { font-size: 2em; margin-bottom:15px; font-family: var(--font-primary); }
+        #language-selector-screen p { font-size: 1.1em; margin-bottom:30px; opacity:0.9; font-family: var(--font-primary); }
+        .language-button {
+            background-color: rgba(255,255,255,0.9); color:var(--pw-purple);
+            border:none; padding: 15px 30px; margin:10px; border-radius:var(--border-radius-main);
+            font-size:1.2em; font-weight:bold; cursor:pointer; transition: all 0.3s ease;
+            font-family: var(--font-primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .language-button:hover { background-color: white; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+
+        /* Ads Placeholders Styling (same as before) */
+        .simulated-banner-ad { width: 100%; height: 50px; background-color: #f0f0f0; color: #555; display: flex; flex-direction:column; align-items: center; justify-content: center; font-size: 0.7em; text-align: center; border-top: 1px solid #ddd; box-sizing: border-box; position: absolute; bottom: 0; left: 0; z-index: 999; font-family: var(--font-primary); }
+        .simulated-banner-ad strong { font-size:1.1em; color: var(--pw-purple); }
+        .simulated-interstitial-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); color: white; z-index: 2000; justify-content: center; align-items: center; text-align: center; flex-direction: column; font-family: var(--font-primary); }
+        .simulated-interstitial-overlay .ad-content { background-color: #333; padding:30px; border-radius:10px; max-width:80%;}
+        .simulated-interstitial-overlay strong {display:block; font-size:1.5em; margin-bottom:10px; color: var(--pw-pink-accent);}
+        .simulated-interstitial-overlay .close-ad-button { background-color: var(--pw-pink-accent); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; margin-top:15px; font-weight:bold; }
+        .timed-ad-notification { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background-color: var(--pw-blue); color:white; padding: 8px 15px; border-radius: 5px; font-size: 0.8em; z-index:1500; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display:none; font-family: var(--font-primary); }
+
+        /* Dashboard Cards - General Polish */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .dashboard-card { /* ... Existing styles, ensure font-family is var(--font-primary) ... */ font-family: var(--font-primary); }
+        .dashboard-card .title { font-size: 1em; /* Slightly larger */ font-weight: 600; }
+        .dashboard-card.feature-card { /* For new features */
+            background: linear-gradient(135deg, var(--pw-pink-accent), var(--pw-blue));
+            color:white;
+        }
+        .dashboard-card.feature-card .icon, .dashboard-card.feature-card .title { color:white; }
+
+        /* AI Chat - ELI5 Toggle */
+        .ai-chat-controls { padding: 5px 10px; background-color: #E8E2EE; text-align: right; border-bottom:1px solid #ddd;}
+        .ai-chat-controls label { font-size:0.8em; margin-right:5px; font-family: var(--font-primary);}
+        .ai-chat-controls #eli5-toggle { accent-color: var(--pw-purple); }
+
+        /* Chapter Detail - AI Key Points Button */
+        .option-button.ai-feature { background: linear-gradient(135deg, var(--pw-blue), #28a745) !important; }
+
+        /* Notes Modal - Audio Button */
+        #audio-notes-button { background: var(--pw-blue); color:white; border:none; padding:8px 12px; border-radius:var(--border-radius-small); cursor:pointer; font-size:0.8em; margin-top:15px; float:right; font-family: var(--font-primary); }
+
+        /* Game: Match the Columns Screen */
+        #game-match-screen .game-container { padding: 15px; text-align: center; }
+        #game-match-screen h3 { color: var(--pw-purple); margin-bottom: 20px; font-family: var(--font-primary); }
+        .match-columns-area { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .match-column { border: 2px solid var(--pw-purple); border-radius: var(--border-radius-small); padding: 10px; width: 45%; background-color: #fff; }
+        .match-column h4 { margin-top:0; font-size: 1em; color: var(--pw-blue); font-family: var(--font-primary); }
+        .match-item { padding: 10px; margin: 5px 0; background-color: #f0f8ff; border: 1px solid #add8e6; border-radius: var(--border-radius-small); cursor: pointer; transition: background-color 0.2s; font-family: var(--font-primary); }
+        .match-item.selected { background-color: var(--pw-pink-accent); color: white; }
+        .match-item.matched-correct { background-color: #d4edda !important; border-color: #28a745; cursor: default; }
+        .match-item.matched-incorrect { background-color: #f8d7da !important; border-color: #dc3545; cursor: default; }
+        #match-game-feedback { font-weight: bold; margin-top:15px; font-family: var(--font-primary); }
+        #match-game-submit, #match-game-reset { /* ... styled-button like ... */ }
+
+        /* --- Splash, Login, Home, Subjects, Chapters, Profile, Calc (Mostly same styles, but ensure font-family is set correctly) -- */
+        #splash-screen, #login-screen, #home-dashboard, #subject-screen, #chapter-list-screen,
+        #chapter-detail-screen, #ai-chat-screen, #profile-screen, #calculator-screen, #notes-mcq-modal {
+            font-family: var(--font-primary);
+        }
+        /* ... Other styles from previous version with font-family review ... */
+        .list-item-card .title, .chapter-options .option-button, .modal-content h3, .mcq-question, .mcq-options div, .info-item, .calc-button {
+            font-family: var(--font-primary);
+        }
+         .dashboard-card, .list-item-card, .option-button, .calc-button, .styled-button {
+            font-family: var(--font-primary) !important; /* Important to override if needed for some specific cases */
+        }
+    </style>
+</head>
+<body>
+    <h1 class="website-title" data-translate-key="app_title_full">Class 9 Hindi AI Guru</h1>
+
+    <div class="app-container">
+        <!-- Ad Placeholders (Same as before) -->
+        <div id="simulated-banner-ad" class="simulated-banner-ad" style="display:none;">
+            <strong data-translate-key="sim_banner_ad">Simulated Banner Ad</strong>
+            <span id="banner-ad-id-display"></span>
+        </div>
+        <div id="simulated-interstitial-overlay" class="simulated-interstitial-overlay">
+            <div class="ad-content">
+                <strong data-translate-key="sim_interstitial_ad">Simulated Interstitial Ad</strong>
+                <p id="interstitial-ad-id-display"></p>
+                <span data-translate-key="interstitial_placeholder_text">This is a placeholder for a full-screen ad.</span>
+                <button class="close-ad-button" onclick="adManager.hideInterstitial()" data-translate-key="close_ad_btn">Close Ad</button>
+            </div>
+        </div>
+        <div id="timed-ad-notification" class="timed-ad-notification" data-translate-key="timed_ad_notif">Simulated Timed Interstitial Ad!</div>
+
+
+        <!-- Screen 0: Language Selector -->
+        <div id="language-selector-screen" class="screen active no-banner-adjustment">
+            <!-- This screen will be active by default for JS to pick up -->
+            <h1 data-translate-key="welcome_language">भाषा चुनें / Select Language</h1>
+            <p data-translate-key="choose_preferred_language">कृपया अपनी पसंदीदा भाषा चुनें।<br>Please choose your preferred language.</p>
+            <div>
+                <button class="language-button" onclick="setLanguage('hi')">हिन्दी</button>
+                <button class="language-button" onclick="setLanguage('en')">English</button>
+            </div>
+        </div>
+
+        <!-- Screen 1: Splash Screen -->
+        <div id="splash-screen" class="screen no-banner-adjustment">
+            <div class="logo-placeholder" id="splash-logo">गुरु</div>
+            <h1 data-translate-key="app_name_splash">Class 9 Hindi AI Guru</h1>
+            <p class="tagline" data-translate-key="app_tagline_splash">आपका अपना हिंदी मीडियम AI गुरु</p>
+            <div class="loader"></div>
+        </div>
+
+        <!-- Screen 2: Login/Signup Screen -->
+        <div id="login-screen" class="screen no-banner-adjustment">
+            <div class="login-box">
+                <h2 data-translate-key="welcome_login">स्वागतम्!</h2>
+                <p style="margin-bottom:25px; font-size:0.95em; color:#555;" data-translate-key="login_prompt">सीखने की अपनी यात्रा शुरू करें।</p>
+                <button class="styled-button google-button" onclick="handleGoogleSignIn()">
+                    <span class="icon">G</span> <span data-translate-key="google_signin_btn">गूगल से साइन इन करें</span>
+                </button>
+                <button class="styled-button guest-button" onclick="handleGuestLogin()">
+                    <span class="icon">👤</span> <span data-translate-key="guest_continue_btn">अतिथि के रूप में जारी रखें</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Screen 3: Home Dashboard -->
+        <div id="home-dashboard" class="screen">
+            <div class="header"> <h1 id="dashboard-greeting" data-translate-key="greeting_user">नमस्ते!</h1> <a href="#" class="profile-button" id="dashboard-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content">
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="navigateTo('subject-screen')"><div class="icon">📘</div> <div class="title" data-translate-key="subjects_tile">विषय</div></div>
+                    <div class="dashboard-card" onclick="navigateTo('ai-chat-screen')"><div class="icon">❓</div> <div class="title" data-translate-key="ai_doubt_solver_tile">AI शंका समाधान</div></div>
+                    <div class="dashboard-card" onclick="navigateTo('subject-screen', { targetFeature: 'mcq' })"><div class="icon">📝</div> <div class="title" data-translate-key="practice_mcq_tile">अभ्यास MCQ</div></div>
+                    <div class="dashboard-card" onclick="navigateTo('subject-screen', { targetFeature: 'notes' })"><div class="icon">📚</div> <div class="title" data-translate-key="notes_tile">नोट्स</div></div>
+                    <div class="dashboard-card" onclick="navigateTo('calculator-screen')"><div class="icon">🧮</div> <div class="title" data-translate-key="calculator_tile">कैलकुलेटर</div></div>
+                    <div class="dashboard-card" onclick="alert(uiStrings[currentLanguage]['search_wip'])"><div class="icon">🔍</div> <div class="title" data-translate-key="search_tile">खोजें</div></div>
+
+                    <!-- New Game Tiles -->
+                    <div class="dashboard-card feature-card" onclick="navigateTo('game-select-screen')">
+                        <div class="icon">🎮</div> <div class="title" data-translate-key="games_tile">शैक्षिक खेल</div>
+                    </div>
+                     <!-- New SRS Tile -->
+                    <div class="dashboard-card feature-card" onclick="navigateTo('srs-info-screen')">
+                        <div class="icon">🧠</div> <div class="title" data-translate-key="srs_flashcards_tile">रिवीजन फ़्लैशकार्ड (SRS)</div>
+                    </div>
+
+                    <div class="dashboard-card motivation-card">
+                        <div class="icon">🎯</div> <div class="title" data-translate-key="motivation_tile">आज की प्रेरणा</div>
+                        <p id="daily-motivation-quote" data-translate-key="motivation_quote_default">मेहनत का फल हमेशा मीठा होता है।</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Selection Screen -->
+        <div id="game-select-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_game_title">खेल चुनें</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content">
+                <div class="list-item-card" onclick="navigateTo('game-match-screen', {gameId: 'sci_ch1_match'})">
+                    <div class="icon">🔄</div> <div class="title" data-translate-key="match_columns_game">मिलान करो: पदार्थ की अवस्थाएँ</div> <div class="arrow">→</div>
+                </div>
+                <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'])">
+                    <div class="icon">🧩</div> <div class="title" data-translate-key="puzzle_game_placeholder">शब्द पहेली (जल्द आ रहा है)</div> <div class="arrow">→</div>
+                </div>
+                 <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'])">
+                    <div class="icon">⏱️</div> <div class="title" data-translate-key="quiz_challenge_placeholder">क्विज़ चुनौती (जल्द आ रहा है)</div> <div class="arrow">→</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SRS Info Screen (Placeholder) -->
+        <div id="srs-info-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="srs_info_title">रिवीजन फ़्लैशकार्ड (SRS)</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content" style="text-align:center; padding-top: 50px;">
+                <div class="icon" style="font-size:4em; color:var(--pw-purple); margin-bottom:20px;">🧠</div>
+                <h3 data-translate-key="srs_coming_soon_title" style="color:var(--pw-purple);">यह सुविधा जल्द आ रही है!</h3>
+                <p data-translate-key="srs_coming_soon_desc" style="font-size:1.1em; color:#555; margin-top:10px;">Spaced Repetition System (SRS) आपको महत्वपूर्ण तथ्यों और अवधारणाओं को लंबे समय तक याद रखने में मदद करेगा।</p>
+            </div>
+        </div>
+
+        <!-- Game: Match the Columns Screen -->
+        <div id="game-match-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('game-select-screen')">←</button> <h2 id="match-game-title" data-translate-key="match_columns_game_title">मिलान करो</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a></div>
+            <div class="content game-container">
+                <h3 id="match-game-instructions" data-translate-key="match_instructions">कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।</h3>
+                <div class="match-columns-area">
+                    <div class="match-column" id="match-column-a">
+                        <h4 data-translate-key="column_a">कॉलम A</h4>
+                        <!-- Items added by JS -->
+                    </div>
+                    <div class="match-column" id="match-column-b">
+                        <h4 data-translate-key="column_b">कॉलम B</h4>
+                        <!-- Items added by JS -->
+                    </div>
+                </div>
+                <div id="match-game-feedback"></div>
+                <button id="match-game-submit" class="styled-button primary-action-button" style="display:none;" onclick="submitMatchGame()" data-translate-key="submit_btn">सबमिट करें</button>
+                <button id="match-game-reset" class="styled-button guest-button" onclick="resetMatchGame()" data-translate-key="reset_btn">पुनः आरंभ करें</button>
+            </div>
+        </div>
+
+        <!-- Screen 4: Subject Screen -->
+        <div id="subject-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_subject_title">विषय चुनें</h2> <a href="#" class="profile-button" id="subject-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content" id="subject-list-content"></div>
+        </div>
+
+        <!-- Screen 4.1: Chapter List Screen -->
+        <div id="chapter-list-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('subject-screen')">←</button> <h2 id="chapter-list-title" data-translate-key="chapters_title">अध्याय</h2> <a href="#" class="profile-button" id="chapter-list-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content" id="chapter-list-items"></div>
+        </div>
+
+        <!-- Screen 4.2: Chapter Detail Screen -->
+        <div id="chapter-detail-screen" class="screen">
+            <div class="header"> <button class="back-button" id="chapter-detail-back-button">←</button> <h2 id="chapter-detail-title">[Chapter Name]</h2> <a href="#" class="profile-button" id="chapter-detail-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content chapter-options">
+                <a href="#" class="option-button" id="view-notes-button"> <span class="icon">📄</span> <span data-translate-key="view_notes_btn">नोट्स देखें</span> </a>
+                <a href="#" class="option-button ai-feature" id="view-ai-keys-button"> <span class="icon">✨</span> <span data-translate-key="view_ai_keys_btn">मुख्य बिंदु देखें (AI)</span> </a>
+                <a href="#" class="option-button" id="practice-mcqs-button"> <span class="icon">✍️</span> <span data-translate-key="practice_mcq_btn">अभ्यास MCQ</span> </a>
+                <a href="#" class="option-button" id="ask-doubt-button"> <span class="icon">💬</span> <span data-translate-key="ask_doubt_btn">शंका पूछें (AI)</span> </a>
+            </div>
+        </div>
+
+        <!-- Screen 5: AI Doubt Solver -->
+        <div id="ai-chat-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="goBackToPreviousScreenOr('home-dashboard')">←</button> <h2 data-translate-key="ai_doubt_solver_title_header">AI शंका समाधान</h2> <a href="#" class="profile-button" id="ai-chat-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="ai-chat-controls">
+                <label for="eli5-toggle" data-translate-key="eli5_mode_label">सरल भाषा में समझाएं (ELI5 Mode):</label>
+                <input type="checkbox" id="eli5-toggle" onchange="toggleEli5Mode(this.checked)">
+            </div>
+            <div class="chat-messages" id="chat-messages-container"> <div class="message ai-message" data-translate-key="ai_initial_greeting">नमस्ते! आप मुझसे कक्षा 9 के किसी भी विषय पर प्रश्न पूछ सकते हैं।</div> </div>
+            <div class="chat-input"> <input type="text" id="chat-input-field" data-translate-key="chat_input_placeholder" placeholder="अपना प्रश्न यहाँ लिखें..."> <button onclick="sendChatMessage()" data-translate-key="send_btn">भेजें</button> </div>
+        </div>
+
+        <!-- Screen 10: Profile Screen (translation keys for static text) -->
+        <div id="profile-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="my_profile_title">मेरी प्रोफ़ाइल</h2> <div></div> </div>
+            <div class="content">
+                <div class="profile-header"> <div class="profile-avatar" id="profile-avatar-initials">👤</div> <h3 id="profile-user-name">[छात्र का नाम]</h3> </div>
+                <div class="info-item"><strong data-translate-key="email_label">ईमेल:</strong> <span id="profile-user-email">[student@example.com]</span></div>
+                <div class="info-item"><strong data-translate-key="class_label">कक्षा:</strong> <span>9</span></div> <hr style="margin: 20px 0; border-color: #eee;">
+                <h4 data-translate-key="performance_tracking_title">प्रदर्शन ट्रैकिंग (उदाहरण):</h4>
+                <p class="info-item"><span data-translate-key="avg_score_label">कुल प्रश्नोत्तरी औसत स्कोर:</span> <span id="profile-avg-score">--%</span></p>
+                <p class="info-item"><span data-translate-key="quizzes_completed_label">पूर्ण की गई प्रश्नोत्तरी:</span> <span id="profile-quizzes-completed">--</span></p> <hr style="margin: 20px 0; border-color: #eee;">
+                <button class="styled-button primary-action-button" onclick="handleLogout()" data-translate-key="logout_btn">लॉग आउट करें</button>
+            </div>
+        </div>
+
+        <!-- Screen 12: Calculator Screen -->
+        <div id="calculator-screen" class="screen">
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="calculator_title_header">कैलकुलेटर</h2> <a href="#" class="profile-button" id="calculator-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content"> <!-- ... Calculator HTML ... --> </div>
+        </div>
+
+        <!-- Modal for Notes, MCQs, AI Key Points -->
+        <div id="notes-mcq-modal" class="modal">
+            <div class="modal-content">
+                <span class="modal-close-button" onclick="closeModal()">×</span>
+                <h3 id="modal-title">विवरण</h3>
+                <div id="modal-extra-controls" style="text-align:right; margin-bottom:10px;">
+                    <!-- Audio Button will be added here by JS for notes -->
+                </div>
+                <div class="modal-mcq-body" id="modal-body"></div>
+                <div id="mcq-final-score" style="display:none;"></div>
+                <button id="mcq-submit-button" style="display:none;" onclick="submitMcqQuiz()" data-translate-key="submit_btn">सबमिट करें</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- Internationalization (i18n) ---
+    let currentLanguage = 'hi'; // Default
+    const uiStrings = {
+        hi: {
+            app_title_full: "कक्षा 9 हिंदी AI गुरु",
+            welcome_language: "भाषा चुनें",
+            choose_preferred_language: "कृपया अपनी पसंदीदा भाषा चुनें।",
+            app_name_splash: "कक्षा 9 हिंदी AI गुरु",
+            app_tagline_splash: "आपका अपना हिंदी मीडियम AI गुरु",
+            welcome_login: "स्वागतम्!",
+            login_prompt: "सीखने की अपनी यात्रा शुरू करें।",
+            google_signin_btn: "गूगल से साइन इन करें",
+            guest_continue_btn: "अतिथि के रूप में जारी रखें",
+            greeting_user: "नमस्ते, {userName}!", // Placeholder
+            subjects_tile: "विषय",
+            ai_doubt_solver_tile: "AI शंका समाधान",
+            practice_mcq_tile: "अभ्यास MCQ",
+            notes_tile: "नोट्स",
+            calculator_tile: "कैलकुलेटर",
+            search_tile: "खोजें",
+            games_tile: "शैक्षिक खेल",
+            srs_flashcards_tile: "रिवीजन फ़्लैशकार्ड (SRS)",
+            motivation_tile: "आज की प्रेरणा",
+            motivation_quote_default: "मेहनत का फल हमेशा मीठा होता है।",
+            sim_banner_ad: "नकली बैनर विज्ञापन",
+            sim_interstitial_ad: "नकली इंटरस्टीशियल विज्ञापन",
+            interstitial_placeholder_text: "यह एक फ़ुल-स्क्रीन विज्ञापन के लिए प्लेसहोल्डर है।",
+            close_ad_btn: "विज्ञापन बंद करें",
+            timed_ad_notif: "नकली समयबद्ध इंटरस्टीशियल विज्ञापन!",
+            select_game_title: "खेल चुनें",
+            match_columns_game: "मिलान करो: पदार्थ की अवस्थाएँ",
+            puzzle_game_placeholder: "शब्द पहेली (जल्द आ रहा है)",
+            quiz_challenge_placeholder: "क्विज़ चुनौती (जल्द आ रहा है)",
+            srs_info_title: "रिवीजन फ़्लैशकार्ड (SRS)",
+            srs_coming_soon_title: "यह सुविधा जल्द आ रही है!",
+            srs_coming_soon_desc: "Spaced Repetition System (SRS) आपको महत्वपूर्ण तथ्यों और अवधारणाओं को लंबे समय तक याद रखने में मदद करेगा।",
+            match_columns_game_title: "मिलान करो",
+            match_instructions: "कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।",
+            column_a: "कॉलम A", column_b: "कॉलम B",
+            submit_btn: "सबमिट करें", reset_btn: "पुनः आरंभ करें",
+            select_subject_title: "विषय चुनें",
+            chapters_title: "अध्याय",
+            view_notes_btn: "नोट्स देखें",
+            view_ai_keys_btn: "मुख्य बिंदु देखें (AI)",
+            practice_mcq_btn: "अभ्यास MCQ",
+            ask_doubt_btn: "शंका पूछें (AI)",
+            ai_doubt_solver_title_header: "AI शंका समाधान",
+            eli5_mode_label: "सरल भाषा में समझाएं (ELI5 Mode):",
+            ai_initial_greeting: "नमस्ते! आप मुझसे कक्षा 9 के किसी भी विषय पर प्रश्न पूछ सकते हैं।",
+            chat_input_placeholder: "अपना प्रश्न यहाँ लिखें...",
+            send_btn: "भेजें",
+            my_profile_title: "मेरी प्रोफ़ाइल",
+            email_label: "ईमेल:", class_label: "कक्षा:",
+            performance_tracking_title: "प्रदर्शन ट्रैकिंग (उदाहरण):",
+            avg_score_label: "कुल प्रश्नोत्तरी औसत स्कोर:",
+            quizzes_completed_label: "पूर्ण की गई प्रश्नोत्तरी:",
+            logout_btn: "लॉग आउट करें",
+            calculator_title_header: "कैलकुलेटर",
+            game_wip: "यह खेल अभी विकास में है।",
+            search_wip: "खोज सुविधा जल्द ही लागू की जाएगी।",
+            audio_notes_btn: "ऑडियो सुनें",
+            audio_playing_sim: "ऑडियो चल रहा है (सिमुलेशन)...",
+            ai_keys_title_modal: "मुख्य बिंदु (AI द्वारा उत्पन्न - सिमुलेशन)",
+            error_text: "त्रुटि"
+        },
+        en: {
+            app_title_full: "Class 9 AI Guru (Website)",
+            welcome_language: "Select Language",
+            choose_preferred_language: "Please choose your preferred language.",
+            app_name_splash: "Class 9 AI Guru",
+            app_tagline_splash: "Your Personal AI Guru",
+            welcome_login: "Welcome!",
+            login_prompt: "Start your learning journey.",
+            google_signin_btn: "Sign in with Google",
+            guest_continue_btn: "Continue as Guest",
+            greeting_user: "Hello, {userName}!",
+            subjects_tile: "Subjects",
+            ai_doubt_solver_tile: "AI Doubt Solver",
+            practice_mcq_tile: "Practice MCQs",
+            notes_tile: "Notes",
+            calculator_tile: "Calculator",
+            search_tile: "Search",
+            games_tile: "Educational Games",
+            srs_flashcards_tile: "Revision Flashcards (SRS)",
+            motivation_tile: "Motivation of the Day",
+            motivation_quote_default: "Hard work always pays off.",
+            sim_banner_ad: "Simulated Banner Ad",
+            sim_interstitial_ad: "Simulated Interstitial Ad",
+            interstitial_placeholder_text: "This is a placeholder for a full-screen ad.",
+            close_ad_btn: "Close Ad",
+            timed_ad_notif: "Simulated Timed Interstitial Ad!",
+            select_game_title: "Select Game",
+            match_columns_game: "Match: States of Matter",
+            puzzle_game_placeholder: "Word Puzzle (Coming Soon)",
+            quiz_challenge_placeholder: "Quiz Challenge (Coming Soon)",
+            srs_info_title: "Revision Flashcards (SRS)",
+            srs_coming_soon_title: "This Feature is Coming Soon!",
+            srs_coming_soon_desc: "The Spaced Repetition System (SRS) will help you remember important facts and concepts for longer.",
+            match_columns_game_title: "Match the Columns",
+            match_instructions: "Match items from Column A with the correct items in Column B.",
+            column_a: "Column A", column_b: "Column B",
+            submit_btn: "Submit", reset_btn: "Reset",
+            select_subject_title: "Select Subject",
+            chapters_title: "Chapters",
+            view_notes_btn: "View Notes",
+            view_ai_keys_btn: "View Key Points (AI)",
+            practice_mcq_btn: "Practice MCQs",
+            ask_doubt_btn: "Ask Doubt (AI)",
+            ai_doubt_solver_title_header: "AI Doubt Solver",
+            eli5_mode_label: "Explain Like I'm 5 (ELI5 Mode):",
+            ai_initial_greeting: "Hello! You can ask me any question about Class 9 subjects.",
+            chat_input_placeholder: "Type your question here...",
+            send_btn: "Send",
+            my_profile_title: "My Profile",
+            email_label: "Email:", class_label: "Class:",
+            performance_tracking_title: "Performance Tracking (Example):",
+            avg_score_label: "Overall Quiz Average Score:",
+            quizzes_completed_label: "Quizzes Completed:",
+            logout_btn: "Logout",
+            calculator_title_header: "Calculator",
+            game_wip: "This game is under development.",
+            search_wip: "Search functionality will be implemented soon.",
+            audio_notes_btn: "Listen to Audio",
+            audio_playing_sim: "Playing audio (simulation)...",
+            ai_keys_title_modal: "Key Points (AI Generated - Simulation)",
+            error_text: "Error"
+        }
+    };
+
+    function applyTranslations() {
+        document.querySelectorAll('[data-translate-key]').forEach(element => {
+            const key = element.getAttribute('data-translate-key');
+            let translation = uiStrings[currentLanguage][key] || uiStrings['en'][key] || `Missing: ${key}`; // Fallback
+            
+            // Handle placeholders like {userName}
+            if (translation.includes("{userName}") && currentUser) {
+                translation = translation.replace("{userName}", currentUser.name);
+            }
+            
+            if (element.tagName === 'INPUT' && element.type === 'text' && element.placeholder) {
+                 element.placeholder = translation;
+            } else {
+                element.innerHTML = translation; // Use innerHTML to support icons within buttons
+            }
+        });
+        // Special case for dynamic titles in navigateTo
+        if(document.getElementById(currentScreenId)) { // Ensure current screen is valid
+            const currentScreenHeaderTitle = document.querySelector(`#${currentScreenId} .header h2`);
+            if (currentScreenHeaderTitle && currentScreenHeaderTitle.dataset.translateKeyStatic) {
+                currentScreenHeaderTitle.innerText = uiStrings[currentLanguage][currentScreenHeaderTitle.dataset.translateKeyStatic];
+            }
+        }
+        // Update dynamic subject/chapter names IF data is translated (simplified for demo)
+        // In a real app, ncert_data itself would be language-specific or have translations.
+        if(currentScreenId === 'chapter-list-screen' && navigationParams.subjectNameKey){
+            document.getElementById('chapter-list-title').innerText = (uiStrings[currentLanguage].subjects && uiStrings[currentLanguage].subjects[navigationParams.subjectNameKey]) ? `${uiStrings[currentLanguage].subjects[navigationParams.subjectNameKey]} - ${uiStrings[currentLanguage].chapters_title}` : `${navigationParams.subjectName} - ${uiStrings[currentLanguage].chapters_title}`;
+        }
+        if(currentScreenId === 'chapter-detail-screen' && navigationParams.chapterTitleKey){
+             document.getElementById('chapter-detail-title').innerText = (uiStrings[currentLanguage].chapters && uiStrings[currentLanguage].chapters[navigationParams.chapterTitleKey]) ? uiStrings[currentLanguage].chapters[navigationParams.chapterTitleKey] : navigationParams.chapter?.title;
+        }
+    }
+
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        localStorage.setItem('appLanguage', lang);
+        document.documentElement.lang = lang; // Set HTML lang attribute
+        applyTranslations();
+        if (currentScreenId === 'language-selector-screen') {
+            navigateTo('splash-screen'); // Move to next screen after language selection
+        }
+    }
+    
+    // --- AdManager (Same as before) ---
+    const adManager = { /* ... same code as previous version ... */ };
+
+    // --- User Data (Same as before) ---
+    let currentUser = { /* ... same code ... */ };
+    function updateUserSession(name, email = "") { /* ... same ... */ }
+    function saveUserSession() { /* ... same ... */ }
+    function updateUIAfterLogin() { /* ... call applyTranslations() at the end ... */
+        // ... existing code ...
+        applyTranslations(); // Re-apply translations for dynamic elements like greeting
+    }
+    function loadUserSession() { /* ... same ... */ }
+    function handleGoogleSignIn() { /* ... same ... */ }
+    function handleGuestLogin() { /* ... same ... */ }
+    function handleLogout() { /* ... same, maybe clear language pref too or reset to default screen sequence */ }
+
+
+    // --- NCERT Data (with basic translation structure for titles for demo) ---
+    const ncert_data = {
+        // HI (Original Data)
+        hi: {
+            science: { subjectNameKey:"science_subj_hi", subjectName: "विज्ञान", chapters: [
+                { id: "sci_ch1", titleKey: "sci_ch1_hi", title: "हमारे आस-पास के पदार्थ", notes: ["पदार्थ कणों से मिलकर बना होता है।", "पदार्थ की तीन अवस्थाएँ: ठोस, द्रव, गैस।", "गलनांक, क्वथनांक।", "वाष्पीकरण शीतलता प्रदान करता है।"], aiKeyPoints: ["पदार्थ छोटे कणों से बनता है।","कणों के बीच खाली स्थान होता है।","कण लगातार चलते रहते हैं।","तापमान बढ़ने पर कणों की गति तेज हो जाती है।"], mcqs: [ /* ... existing 7+ mcqs ... */ ]},
+                { id: "sci_ch2", titleKey: "sci_ch2_hi", title: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?", notes: ["मिश्रण और यौगिक।"], mcqs: [/* ... */] }
+            ]},
+            maths: { subjectNameKey:"maths_subj_hi", subjectName: "गणित", chapters: [/* ... */] },
+            social_science: { subjectNameKey:"sst_subj_hi", subjectName: "सामाजिक विज्ञान", chapters: [/* ... */] },
+            hindi: { subjectNameKey:"hindi_subj_hi", subjectName: "हिन्दी (क्षितिज)", chapters: [/* ... */] }
+        },
+        // EN (Translated Sample Titles & Notes)
+        en: {
+            science: { subjectNameKey:"science_subj_en", subjectName: "Science", chapters: [
+                { id: "sci_ch1", titleKey: "sci_ch1_en", title: "Matter in Our Surroundings", notes: ["Matter is made up of particles.", "Three states of matter: Solid, Liquid, Gas.", "Melting point, boiling point.", "Evaporation causes cooling."], aiKeyPoints: ["Matter is composed of small particles.", "Particles have space between them.", "Particles are constantly moving.", "Kinetic energy of particles increases with temperature."], mcqs: [ /* MCQ content would also need translation */ 
+                    { q: "How many main states of matter are there?", o: ["One", "Two", "Three", "Four"], a: 2, expl: "The three main states of matter are solid, liquid, and gas." },
+                    { q: "In which state is the force of attraction between particles the strongest?", o: ["Solid", "Liquid", "Gas", "Plasma"], a: 0, expl: "In solids, particles are closest and attraction is strongest." },
+                    // ... translate other MCQs for sci_ch1 if you want more complete demo
+                ]},
+                { id: "sci_ch2", titleKey: "sci_ch2_en", title: "Is Matter Around Us Pure?", notes: ["Mixtures and Compounds."], mcqs: [/* ... */] }
+            ]},
+            maths: { subjectNameKey:"maths_subj_en", subjectName: "Mathematics", chapters: [/* ... */] },
+            social_science: { subjectNameKey:"sst_subj_en", subjectName: "Social Science", chapters: [/* ... */] },
+            hindi: { subjectNameKey:"hindi_subj_en", subjectName: "Hindi (Kshitij)", chapters: [/* ... */] } // This might be tricky as "Hindi" subject usually remains Hindi
+        }
+    };
+     // Update uiStrings with dynamic subject/chapter keys (Simplified for demo)
+    uiStrings.hi.subjects = {
+        science_subj_hi: "विज्ञान", maths_subj_hi: "गणित", sst_subj_hi: "सामाजिक विज्ञान", hindi_subj_hi: "हिन्दी"
+    };
+    uiStrings.en.subjects = {
+        science_subj_en: "Science", maths_subj_en: "Mathematics", sst_subj_en: "Social Science", hindi_subj_en: "Hindi"
+    };
+    uiStrings.hi.chapters = { sci_ch1_hi: "हमारे आस-पास के पदार्थ", sci_ch2_hi: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?" };
+    uiStrings.en.chapters = { sci_ch1_en: "Matter in Our Surroundings", sci_ch2_en: "Is Matter Around Us Pure?" };
+
+    let currentQuizData = { questions: [], userAnswers: [], currentChapterId: null };
+    let eli5ModeActive = false; // For AI Chat
+
+    // --- Match the Columns Game Logic ---
+    let matchGameData = {};
+    let selectedMatchItem = { column: null, index: -1, element: null };
+    let matchGameAttempts = 0;
+
+    function setupMatchGame(gameId) {
+        // Example Data for "Matter in Our Surroundings"
+        if (gameId === 'sci_ch1_match') {
+            matchGameData = {
+                titleKey: "match_columns_game", // For dynamic title
+                columnA: [
+                    { id: 'a1', textKey: 'solid_state', text: "ठोस अवस्था", matchId: 'b1' },
+                    { id: 'a2', textKey: 'liquid_state', text: "द्रव अवस्था", matchId: 'b3' },
+                    { id: 'a3', textKey: 'gaseous_state', text: "गैसीय अवस्था", matchId: 'b2' },
+                    { id: 'a4', textKey: 'melting_point', text: "गलनांक", matchId: 'b4' }
+                ],
+                columnB: [
+                    { id: 'b1', textKey: 'fixed_shape_volume', text: "निश्चित आकार और आयतन" },
+                    { id: 'b2', textKey: 'no_fixed_shape_volume', text: "निश्चित आकार या आयतन नहीं" },
+                    { id: 'b3', textKey: 'fixed_volume_no_shape', text: "निश्चित आयतन, आकार नहीं" },
+                    { id: 'b4', textKey: 'solid_to_liquid_temp', text: "ठोस से द्रव में परिवर्तन का ताप" }
+                ]
+            };
+             // Translate game item texts
+            matchGameData.columnA.forEach(item => item.text = uiStrings[currentLanguage][item.textKey] || item.text);
+            matchGameData.columnB.forEach(item => item.text = uiStrings[currentLanguage][item.textKey] || item.text);
+        } else {
+            // Default or error
+            matchGameData = { columnA: [], columnB: [] };
+        }
+        document.getElementById('match-game-title').innerText = uiStrings[currentLanguage][matchGameData.titleKey] || "Match Game";
+        renderMatchColumns();
+        document.getElementById('match-game-submit').style.display = 'block';
+        document.getElementById('match-game-feedback').innerText = '';
+        matchGameAttempts = 0;
+    }
+
+    function renderMatchColumns() {
+        const colA_div = document.getElementById('match-column-a');
+        const colB_div = document.getElementById('match-column-b');
+        colA_div.innerHTML = `<h4 data-translate-key="column_a">${uiStrings[currentLanguage].column_a}</h4>`;
+        colB_div.innerHTML = `<h4 data-translate-key="column_b">${uiStrings[currentLanguage].column_b}</h4>`;
+
+        // Shuffle Column B for randomness
+        const shuffledB = [...matchGameData.columnB].sort(() => Math.random() - 0.5);
+
+        matchGameData.columnA.forEach((item, index) => {
+            const itemEl = document.createElement('div');
+            itemEl.classList.add('match-item');
+            itemEl.dataset.id = item.id;
+            itemEl.dataset.matchId = item.matchId;
+            itemEl.dataset.columnIndex = 0; // Column A
+            itemEl.dataset.itemIndex = index;
+            itemEl.textContent = item.text;
+            itemEl.onclick = () => selectMatchGameItem(itemEl, 0, index);
+            colA_div.appendChild(itemEl);
+        });
+        shuffledB.forEach((item, index) => { // Use shuffled B
+            const itemEl = document.createElement('div');
+            itemEl.classList.add('match-item');
+            itemEl.dataset.id = item.id;
+            itemEl.dataset.columnIndex = 1; // Column B
+            itemEl.dataset.itemIndex = index; // Original index for comparison if needed, but id is better
+            itemEl.textContent = item.text;
+            itemEl.onclick = () => selectMatchGameItem(itemEl, 1, index);
+            colB_div.appendChild(itemEl);
+        });
+    }
+    function selectMatchGameItem(element, colIndex, itemIndex) {
+        if (element.classList.contains('matched-correct') || element.classList.contains('matched-incorrect')) return;
+
+        if (selectedMatchItem.element) { // If one item is already selected
+            if (selectedMatchItem.column !== colIndex) { // Ensure selection from different columns
+                // Store this pair for checking on submit, or check immediately
+                // For simplicity, we'll make a visual connection if we were doing drag-drop.
+                // For click-click, we temporarily highlight both.
+                // For this mockup, we'll just remember the user's attempted "pair"
+                element.classList.add('selected');
+                // If implementing an immediate check, this is where it would go.
+                // For this submit-based version, we are storing the selected states visually.
+                // User needs to select one from A and one from B.
+                // This click logic is simpler: select an item. If two are selected, attempt to match.
+                 // However, for user selection for later submission, we need to ensure they pick one from each
+                 // Or, even simpler for mockup: user manually marks pairs, and "submit" checks them.
+                 // Let's use the 'selected' class to track user choice for each item in column A for pairing.
+                if (selectedMatchItem.element.dataset.columnIndex === "0") { // If previous was from col A
+                    // Store user's B choice against A choice's dataset
+                     selectedMatchItem.element.dataset.pairedWith = element.dataset.id;
+                     selectedMatchItem.element.textContent += ` \u2194 ${element.textContent.substring(0,15)}...`; // Visual link
+                } // else if previous was col B, then pair with this col A item if applicable.
+
+                // Clear selection after making a pair choice
+                setTimeout(() => {
+                    selectedMatchItem.element.classList.remove('selected');
+                    element.classList.remove('selected');
+                    selectedMatchItem = { column: null, index: -1, element: null };
+                }, 300);
+
+            } else { // Selected from same column again, so switch selection
+                selectedMatchItem.element.classList.remove('selected');
+                element.classList.add('selected');
+                selectedMatchItem = { column: colIndex, index: itemIndex, element: element };
+            }
+        } else { // First item selected
+            element.classList.add('selected');
+            selectedMatchItem = { column: colIndex, index: itemIndex, element: element };
+        }
+    }
+     function resetMatchGame() {
+        const colA_items = document.querySelectorAll('#match-column-a .match-item');
+        const colB_items = document.querySelectorAll('#match-column-b .match-item');
+        
+        colA_items.forEach(item => {
+            item.classList.remove('selected', 'matched-correct', 'matched-incorrect');
+            delete item.dataset.pairedWith; // Clear pairing
+            // Reset text to original (requires storing original text or re-rendering from gameData)
+            const originalItemData = matchGameData.columnA.find(d => d.id === item.dataset.id);
+            if (originalItemData) item.textContent = originalItemData.text;
+        });
+        colB_items.forEach(item => item.classList.remove('selected', 'matched-correct', 'matched-incorrect')); // Column B items generally don't store pair state in this model
+
+        selectedMatchItem = { column: null, index: -1, element: null };
+        document.getElementById('match-game-feedback').innerText = '';
+        document.getElementById('match-game-submit').style.display = 'block'; // Show submit button
+        matchGameAttempts = 0;
+        // Optional: Re-shuffle column B if desired by re-calling renderMatchColumns or parts of it.
+        // For simplicity now, just clears state. For full reset and shuffle, call setupMatchGame with game ID.
+        setupMatchGame(navigationParams.gameId || 'sci_ch1_match');
+    }
+
+    function submitMatchGame() {
+        let correctMatches = 0;
+        const colA_items = document.querySelectorAll('#match-column-a .match-item');
+        colA_items.forEach(itemA => {
+            const itemA_matchId = itemA.dataset.matchId; // What it *should* match in B
+            const userPairedB_Id = itemA.dataset.pairedWith; // What user paired it with from B
+
+            if (userPairedB_Id && userPairedB_Id === itemA_matchId) {
+                correctMatches++;
+                itemA.classList.add('matched-correct');
+                const itemB = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`);
+                if (itemB) itemB.classList.add('matched-correct');
+            } else if (userPairedB_Id) {
+                itemA.classList.add('matched-incorrect');
+                const itemB_user_choice = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`);
+                if(itemB_user_choice) itemB_user_choice.classList.add('matched-incorrect');
+                // Optionally highlight the correct B item
+                 const itemB_correct_match = document.querySelector(`#match-column-b .match-item[data-id='${itemA_matchId}']`);
+                 if(itemB_correct_match) itemB_correct_match.style.border = '2px solid orange'; // Highlight correct if user was wrong
+
+            } else {
+                // Item A was not paired by the user
+                itemA.classList.add('matched-incorrect'); // Mark as incorrect if not attempted
+            }
+        });
+        const feedbackDiv = document.getElementById('match-game-feedback');
+        feedbackDiv.textContent = `Your score: ${correctMatches} / ${matchGameData.columnA.length}`;
+        document.getElementById('match-game-submit').style.display = 'none'; // Hide after submission
+    }
+
+
+    // --- Navigation & Content (Key points button added to chapter detail, language handling) ---
+    let currentScreenId = 'language-selector-screen'; // Start with language selector
+    let previousScreenId = 'language-selector-screen'; let navigationParams = {};
+    function navigateTo(screenId, params = {}) { /* ... same with applyTranslations() at end, handle lang param ... */
+        const noBannerScreens = ['language-selector-screen', 'splash-screen', 'login-screen'];
+        adManager.showBanner(!noBannerScreens.includes(screenId));
+
+        const oldScreen = document.getElementById(currentScreenId); if (oldScreen) oldScreen.classList.remove('active');
+        const newScreen = document.getElementById(screenId);
+        if (newScreen) {
+            previousScreenId = currentScreenId; currentScreenId = screenId; navigationParams = params;
+            newScreen.classList.remove('no-banner-adjustment');
+            if (noBannerScreens.includes(screenId)) { newScreen.classList.add('no-banner-adjustment'); }
+            newScreen.classList.add('active'); window.scrollTo(0,0);
+
+            // Populate screen-specific dynamic content
+            if (screenId === 'subject-screen') initializeSubjectScreen();
+            if (screenId === 'game-match-screen' && params.gameId) setupMatchGame(params.gameId);
+            if (screenId === 'chapter-list-screen' && params.subjectKey) { populateChapterList(params.subjectKey, ncert_data[currentLanguage][params.subjectKey]?.subjectName || params.subjectKey, params.subjectNameKey); document.getElementById('chapter-detail-back-button').onclick = () => navigateTo('chapter-list-screen', { subjectKey: params.subjectKey, subjectNameKey: params.subjectNameKey }); }
+            if (screenId === 'chapter-detail-screen' && params.chapter) {
+                //const chapterTitle = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c=>c.id === params.chapter.id)?.title || params.chapter.title;
+                const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c=>c.id === params.chapter.id);
+                const chapterTitle = chapterData ? chapterData.title : params.chapter.title;
+                document.getElementById('chapter-detail-title').innerText = chapterTitle;
+                params.chapter = chapterData || params.chapter; // Use localized chapter if available
+                document.getElementById('view-notes-button').onclick = () => showNotesModal(params.chapter);
+                document.getElementById('view-ai-keys-button').onclick = () => showAIKeyPointsModal(params.chapter);
+                document.getElementById('practice-mcqs-button').onclick = () => startMcqQuiz(params.chapter);
+                document.getElementById('ask-doubt-button').onclick = () => navigateTo('ai-chat-screen', { contextKey: params.chapter.titleKey, context: chapterTitle });
+            }
+            if (screenId === 'ai-chat-screen' && params.contextKey) {
+                 const inputField = document.getElementById('chat-input-field');
+                 const baseQuestion = currentLanguage === 'hi' ? `अध्याय "${params.context}" के बारे में मेरा एक प्रश्न है: ` : `I have a question about chapter "${params.context}": `;
+                 inputField.value = baseQuestion; inputField.focus();
+            }
+            // ... (targetFeature logic) ...
+            updateUIAfterLogin(); // Includes applyTranslations
+        } else { console.error(`Screen with id "${screenId}" not found.`); }
+    }
+    // goBackToPreviousScreenOr remains the same
+    function initializeSubjectScreen() { /* ... Use currentLanguage for subject names ... */
+        const subjectListContent = document.getElementById('subject-list-content'); subjectListContent.innerHTML = '';
+        const subjects = ncert_data[currentLanguage] || ncert_data.hi; // Fallback to hi
+        Object.keys(subjects).forEach(subjectKey => {
+            const subject = subjects[subjectKey];
+            const iconMap = { science: '🔬', maths: '🧮', social_science: '🌍', hindi: '✍️' };
+            const card = document.createElement('div'); card.classList.add('list-item-card');
+            card.innerHTML = `<div class="icon">${iconMap[subjectKey] || '📚'}</div><div class="title">${subject.subjectName}</div><div class="arrow">→</div>`;
+            card.onclick = () => navigateTo('chapter-list-screen', { subjectKey: subjectKey, subjectName: subject.subjectName, subjectNameKey: subject.subjectNameKey }); // Pass key for better title update
+            subjectListContent.appendChild(card);
+        });
+    }
+    function populateChapterList(subjectKey, subjectName, subjectNameKey) { /* ... Use currentLanguage for chapter titles ... */
+        const chapterListContainer = document.getElementById('chapter-list-items');
+        const chapterListTitle = document.getElementById('chapter-list-title');
+        chapterListContainer.innerHTML = '';
+        chapterListTitle.innerText = `${subjectName} - ${uiStrings[currentLanguage].chapters_title}`;
+        const subjectData = ncert_data[currentLanguage][subjectKey] || ncert_data.hi[subjectKey]; // Fallback
+        if (subjectData && subjectData.chapters) {
+            subjectData.chapters.forEach(chapter => {
+                const card = document.createElement('div'); card.classList.add('list-item-card');
+                card.innerHTML = `<div class="icon">📖</div><div class="title">${chapter.title}</div><div class="arrow">→</div>`;
+                // ... (targetFeature logic remains) ...
+                card.onclick = () => navigateTo('chapter-detail-screen', { chapter: chapter, subjectKey: subjectKey, subjectNameKey:subjectNameKey, chapterTitleKey: chapter.titleKey });
+                chapterListContainer.appendChild(card);
+            });
+        } // else ...
+    }
+
+    // --- Modal (Notes, AI Keys, MCQ) Logic ---
+    const modal = document.getElementById('notes-mcq-modal'); /* ... same elements ... */
+    const modalExtraControls = document.getElementById('modal-extra-controls');
+    function showNotesModal(chapter) { /* ... Add Audio Button ... */
+        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage].notes_tile}`;
+        // ... (notes HTML generation) ...
+        modalBody.innerHTML = notesHtml;
+        modalExtraControls.innerHTML = `<button id="audio-notes-button" onclick="playAudioNotes('${chapter.notes ? chapter.notes.join('. ') : ''}')">${uiStrings[currentLanguage].audio_notes_btn}</button>`;
+        // ... (hide mcq buttons, show modal) ...
+    }
+    function playAudioNotes(textToSpeak) { // Basic TTS simulation
+        alert(uiStrings[currentLanguage].audio_playing_sim);
+        if ('speechSynthesis' in window && textToSpeak) {
+            const utterance = new SpeechSynthesisUtterance(textToSpeak.substring(0, 200)); // Speak first 200 chars
+            utterance.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
+            speechSynthesis.speak(utterance);
+        } else {
+            console.log("Speech synthesis not supported or no text.");
+        }
+    }
+    function showAIKeyPointsModal(chapter) {
+        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage].ai_keys_title_modal}`;
+        let pointsHtml = '<ul>';
+        const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c => c.id === chapter.id);
+        const keyPoints = chapterData?.aiKeyPoints || (currentLanguage === 'hi' ? ["इस अध्याय के लिए AI मुख्य बिंदु जल्द ही उपलब्ध होंगे।"] : ["AI Key points for this chapter will be available soon."]);
+        
+        keyPoints.forEach(point => { pointsHtml += `<li>${point}</li>`; });
+        pointsHtml += '</ul>';
+        modalBody.innerHTML = pointsHtml;
+        modalExtraControls.innerHTML = '';
+        mcqSubmitBtn.style.display = 'none'; mcqFinalScoreDiv.style.display = 'none';
+        modal.style.display = "flex";
+    }
+    // startMcqQuiz, selectMcqOption, submitMcqQuiz, showHint remain similar but use currentLanguage for MCQs if translated
+    // In startMcqQuiz: currentQuizData.questions = chapter.mcqs ? chapter.mcqs[currentLanguage] || chapter.mcqs.hi || chapter.mcqs : [];
+    function startMcqQuiz(chapter) {
+        const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c => c.id === chapter.id) || chapter;
+        currentQuizData.questions = chapterData.mcqs || [];
+        // ... rest of startMcqQuiz logic ...
+        // When displaying MCQ text or options, ensure you access them correctly based on your translated data structure.
+        // For this demo, the MCQs themselves in ncert_data were only partially translated.
+    }
+
+
+    // --- AI Chat with ELI5 (Updated) ---
+    function toggleEli5Mode(isEli5) {
+        eli5ModeActive = isEli5;
+        console.log("ELI5 Mode: " + (eli5ModeActive ? "ON" : "OFF"));
+        // Potentially change the placeholder or add a visual cue in chat
+    }
+    function sendChatMessage() { /* ... Same ad trigger ... */
+        // Modify AI "prompt" (simulation)
+        let simulatedPromptPrefix = eli5ModeActive ? (currentLanguage === 'hi' ? "मुझे यह बिलकुल आसान शब्दों में समझाओ जैसे मैं 5 साल का हूँ: " : "Explain this to me in very simple terms like I'm 5 years old: ") : (currentLanguage === 'hi' ? "कक्षा 9 के शिक्षक के रूप में, मैं आपको इस तरह समझाऊंगा: " : "As a Class 9 teacher, I'll explain it this way: ");
+        // ... rest of sendChatMessage, using simulatedPromptPrefix in the AI response ...
+         setTimeout(() => {
+            const aiResponseDiv = document.createElement('div');
+            aiResponseDiv.classList.add('message', 'ai-message');
+            let aiResponse = simulatedPromptPrefix;
+            // ... (keyword based response remains same for demo) ...
+            aiResponseDiv.textContent = aiResponse;
+            // ...
+        }, 1000);
+    }
+    
+    // --- Calculator Logic (Same) ---
+    // --- Initialization (Updated for language) ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('appLanguage');
+        if (savedLang) {
+            currentLanguage = savedLang;
+            document.documentElement.lang = savedLang;
+        } // Else, default 'hi' is used
+        // Don't apply translations yet, let language selector screen handle first setLanguage call or direct to splash
+
+        adManager.init();
+        // Initial screen is now language selector. It will call navigateTo after selection.
+        // No automatic navigation here until language is set.
+        // But if lang is already set, skip language selector.
+        if (savedLang) {
+            navigateTo('splash-screen'); // or home-dashboard directly if already logged in
+        } else {
+            // Make language selector active. It's already 'active' in HTML to simplify.
+            // Call applyTranslations here for the lang selector screen itself to use its own keys if any part needs it.
+             applyTranslations(); // For the language selector page if it uses translate keys for its static text.
+        }
+
+
+        const motivationQuotes = {
+            hi: ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।"],
+            en: ["Hard work always pays off.", "Education is the most powerful weapon."]
+        };
+        document.getElementById('daily-motivation-quote').innerText = motivationQuotes[currentLanguage][Math.floor(Math.random() * motivationQuotes[currentLanguage].length)];
+        //initializeSubjectScreen(); // Now called from navigateTo
+        //updateDisplay(); // Calc display init (if calc screen is ever default, or on its navigateTo)
+    });
+
+</script>
+</body>
+</html>
