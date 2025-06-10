@@ -3,84 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Class 9 Hindi AI Guru - Website Prototype</title>
+    <title>Class 9 Hindi AI Guru - Website Prototype (Fixed)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --pw-purple: #5A007B; --pw-blue: #007BFF; --pw-pink-accent: #E91E63;
             --pw-text-dark: #333333; --pw-text-light: #FFFFFF; --pw-bg-light: #FFFFFF;
-            --pw-bg-grey: #f0f2f5; /* Changed to a softer grey */
-            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+            --pw-bg-grey: #f0f2f5; --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
             --card-hover-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             --border-radius-main: 14px; --border-radius-small: 10px;
-            --font-primary: 'Poppins', 'Noto Sans Devanagari', sans-serif; /* Poppins for English, Noto for Hindi */
+            --font-primary: 'Poppins', 'Noto Sans Devanagari', sans-serif;
         }
-        body {
-            font-family: var(--font-primary);
-            margin: 0;
-            background-color: var(--pw-bg-grey); /* Site background */
-            color: var(--pw-text-dark);
-            display: flex;
-            flex-direction: column; /* For potential header/footer outside app container */
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px; /* Padding for the overall page */
-            box-sizing: border-box;
-            background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%); /* Engaging gradient bg */
-        }
-        .website-title {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--pw-purple);
-            text-align: center;
-            margin-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-        .app-container { /* This remains our "mobile app" viewport */
-            width: 100%;
-            max-width: 420px; /* Slightly wider */
-            min-height: 750px;
-            max-height: 90vh;
-            background-color: var(--pw-bg-light);
-            border-radius: 25px; /* More rounded for modern feel */
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position:relative;
-        }
-        .screen { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s ease-in-out; width: 100%; height: calc(100% - 50px); /* Banner adjusted */ }
+        body { font-family: var(--font-primary); margin: 0; background-color: var(--pw-bg-grey); color: var(--pw-text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%); }
+        .website-title { font-size: 2.5em; font-weight: 700; color: var(--pw-purple); text-align: center; margin-bottom: 20px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        .app-container { width: 100%; max-width: 420px; min-height: 750px; max-height: 90vh; background-color: var(--pw-bg-light); border-radius: 25px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2); overflow: hidden; display: flex; flex-direction: column; position:relative; }
+        .screen { display: none; flex-direction: column; flex-grow: 1; animation: fadeIn 0.4s ease-in-out; width: 100%; height: calc(100% - 50px); }
         .screen.active { display: flex; }
         .screen.no-banner-adjustment { height: 100%; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0);} }
-
-        .header { /* ... same header style but ensure font respects language ... */
-            background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: var(--pw-text-light); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; font-family: var(--font-primary); }
+        .header { background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: var(--pw-text-light); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex-shrink: 0; font-family: var(--font-primary); }
         .header h1, .header h2 { margin: 0; font-size: 1.2em; font-weight: 500; }
         .header .back-button { background: none; border: none; color: var(--pw-text-light); font-size: 1.7em; cursor: pointer; margin-right: 10px; padding: 5px;}
-        .header .profile-button { /* ... same ... */ }
+        .header .profile-button { background-color: rgba(255,255,255,0.2); color: var(--pw-text-light); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1em; cursor: pointer; text-decoration: none; border: 1px solid rgba(255,255,255,0.3); }
         .content { padding: 20px; flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; font-family: var(--font-primary); }
 
-        /* Language Selector Screen */
-        #language-selector-screen {
-            display: flex; /* Active by default initially */
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, var(--pw-purple), #8E44AD);
-            color: white; text-align:center; padding:30px;
-        }
+        #language-selector-screen { display: none; /* Initially hidden, JS will manage */ flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: white; text-align:center; padding:30px; }
         #language-selector-screen h1 { font-size: 2em; margin-bottom:15px; font-family: var(--font-primary); }
         #language-selector-screen p { font-size: 1.1em; margin-bottom:30px; opacity:0.9; font-family: var(--font-primary); }
-        .language-button {
-            background-color: rgba(255,255,255,0.9); color:var(--pw-purple);
-            border:none; padding: 15px 30px; margin:10px; border-radius:var(--border-radius-main);
-            font-size:1.2em; font-weight:bold; cursor:pointer; transition: all 0.3s ease;
-            font-family: var(--font-primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        .language-button { background-color: rgba(255,255,255,0.9); color:var(--pw-purple); border:none; padding: 15px 30px; margin:10px; border-radius:var(--border-radius-main); font-size:1.2em; font-weight:bold; cursor:pointer; transition: all 0.3s ease; font-family: var(--font-primary); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .language-button:hover { background-color: white; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
 
-        /* Ads Placeholders Styling (same as before) */
         .simulated-banner-ad { width: 100%; height: 50px; background-color: #f0f0f0; color: #555; display: flex; flex-direction:column; align-items: center; justify-content: center; font-size: 0.7em; text-align: center; border-top: 1px solid #ddd; box-sizing: border-box; position: absolute; bottom: 0; left: 0; z-index: 999; font-family: var(--font-primary); }
         .simulated-banner-ad strong { font-size:1.1em; color: var(--pw-purple); }
         .simulated-interstitial-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); color: white; z-index: 2000; justify-content: center; align-items: center; text-align: center; flex-direction: column; font-family: var(--font-primary); }
@@ -89,28 +41,38 @@
         .simulated-interstitial-overlay .close-ad-button { background-color: var(--pw-pink-accent); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; margin-top:15px; font-weight:bold; }
         .timed-ad-notification { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background-color: var(--pw-blue); color:white; padding: 8px 15px; border-radius: 5px; font-size: 0.8em; z-index:1500; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display:none; font-family: var(--font-primary); }
 
-        /* Dashboard Cards - General Polish */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
-        .dashboard-card { /* ... Existing styles, ensure font-family is var(--font-primary) ... */ font-family: var(--font-primary); }
-        .dashboard-card .title { font-size: 1em; /* Slightly larger */ font-weight: 600; }
-        .dashboard-card.feature-card { /* For new features */
-            background: linear-gradient(135deg, var(--pw-pink-accent), var(--pw-blue));
-            color:white;
-        }
-        .dashboard-card.feature-card .icon, .dashboard-card.feature-card .title { color:white; }
+        #splash-screen { justify-content: center; align-items: center; background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: var(--pw-text-light); text-align: center; }
+        #splash-screen .logo-placeholder { width: 110px; height: 110px; margin-bottom: 20px; border-radius: 20px; background-color: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 2.2em; color: var(--pw-purple); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
+        #splash-screen h1 { font-size: 2em; margin-bottom: 10px; font-weight: 700; }
+        #splash-screen p.tagline { font-size: 1.1em; opacity: 0.9; }
+        #splash-screen .loader { margin-top: 30px; width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.3); border-top-color: var(--pw-text-light); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* AI Chat - ELI5 Toggle */
+        #login-screen { justify-content: center; align-items: center; text-align: center; background-color: var(--pw-bg-grey); }
+        #login-screen .login-box { background-color: var(--pw-bg-light); padding: 35px; border-radius: var(--border-radius-main); box-shadow: var(--card-shadow); width: 90%; max-width: 330px; }
+        #login-screen h2 { margin-bottom: 30px; color: var(--pw-purple); font-weight: 700; font-size: 1.8em; }
+        .styled-button { display: block; width: 100%; padding: 14px; margin-bottom: 18px; border: none; border-radius: var(--border-radius-small); font-size: 1em; font-weight: 500; cursor: pointer; transition: all 0.3s ease; text-align: center; text-decoration: none; box-sizing: border-box; }
+        .google-button { background-color: #DB4437; color: white; } .guest-button { background-color: #6c757d; color: white; }
+        .primary-action-button { background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: white; }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .dashboard-card { background-color: var(--pw-bg-light); border-radius: var(--border-radius-main); padding: 20px 15px; text-align: center; box-shadow: var(--card-shadow); cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 125px; border: 1px solid #eee; font-family: var(--font-primary);}
+        .dashboard-card:hover { transform: translateY(-5px); box-shadow: var(--card-hover-shadow); }
+        .dashboard-card .icon { font-size: 2.5em; margin-bottom: 12px; color: var(--pw-purple); }
+        .dashboard-card .title { font-size: 1em; font-weight: 600; color: var(--pw-text-dark); }
+        .dashboard-card.feature-card { background: linear-gradient(135deg, var(--pw-pink-accent), var(--pw-blue)); color:white; }
+        .dashboard-card.feature-card .icon, .dashboard-card.feature-card .title { color:white; }
+        .motivation-card { grid-column: span 2; background: linear-gradient(135deg, var(--pw-blue), var(--pw-pink-accent)); color: white; }
+        .motivation-card .icon, .motivation-card .title { color: white; }
+        .motivation-card p { font-size: 0.9em; margin-top: 8px; opacity: 0.9; }
+
         .ai-chat-controls { padding: 5px 10px; background-color: #E8E2EE; text-align: right; border-bottom:1px solid #ddd;}
         .ai-chat-controls label { font-size:0.8em; margin-right:5px; font-family: var(--font-primary);}
         .ai-chat-controls #eli5-toggle { accent-color: var(--pw-purple); }
 
-        /* Chapter Detail - AI Key Points Button */
         .option-button.ai-feature { background: linear-gradient(135deg, var(--pw-blue), #28a745) !important; }
-
-        /* Notes Modal - Audio Button */
         #audio-notes-button { background: var(--pw-blue); color:white; border:none; padding:8px 12px; border-radius:var(--border-radius-small); cursor:pointer; font-size:0.8em; margin-top:15px; float:right; font-family: var(--font-primary); }
-
-        /* Game: Match the Columns Screen */
+        
         #game-match-screen .game-container { padding: 15px; text-align: center; }
         #game-match-screen h3 { color: var(--pw-purple); margin-bottom: 20px; font-family: var(--font-primary); }
         .match-columns-area { display: flex; justify-content: space-around; margin-bottom: 20px; }
@@ -121,27 +83,66 @@
         .match-item.matched-correct { background-color: #d4edda !important; border-color: #28a745; cursor: default; }
         .match-item.matched-incorrect { background-color: #f8d7da !important; border-color: #dc3545; cursor: default; }
         #match-game-feedback { font-weight: bold; margin-top:15px; font-family: var(--font-primary); }
-        #match-game-submit, #match-game-reset { /* ... styled-button like ... */ }
 
-        /* --- Splash, Login, Home, Subjects, Chapters, Profile, Calc (Mostly same styles, but ensure font-family is set correctly) -- */
         #splash-screen, #login-screen, #home-dashboard, #subject-screen, #chapter-list-screen,
-        #chapter-detail-screen, #ai-chat-screen, #profile-screen, #calculator-screen, #notes-mcq-modal {
+        #chapter-detail-screen, #ai-chat-screen, #profile-screen, #calculator-screen, #notes-mcq-modal,
+        #game-select-screen, #game-match-screen, #srs-info-screen {
             font-family: var(--font-primary);
         }
-        /* ... Other styles from previous version with font-family review ... */
         .list-item-card .title, .chapter-options .option-button, .modal-content h3, .mcq-question, .mcq-options div, .info-item, .calc-button {
             font-family: var(--font-primary);
         }
-         .dashboard-card, .list-item-card, .option-button, .calc-button, .styled-button {
-            font-family: var(--font-primary) !important; /* Important to override if needed for some specific cases */
-        }
+        /* Copied styles for brevity (List item cards, chapter options, AI chat, profile, modal, calculator) */
+        .list-item-card { background-color: var(--pw-bg-light); border-radius: var(--border-radius-small); padding: 18px 20px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s ease; border-left: 4px solid var(--pw-purple); }
+        .list-item-card:hover { background-color: #f9f9f9; transform: translateX(3px); }
+        .list-item-card .icon { font-size: 1.8em; color: var(--pw-purple); margin-right: 18px; }
+        .list-item-card .title { font-size: 1.05em; font-weight: 500; color: var(--pw-text-dark); flex-grow: 1; }
+        .list-item-card .arrow { font-size: 1.3em; color: var(--pw-purple); }
+        .chapter-options .option-button { display: flex; align-items: center; background: var(--pw-purple); color: white; padding: 16px 20px; border-radius: var(--border-radius-small); margin-bottom: 15px; text-decoration: none; font-size: 1.05em; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s ease; font-weight: 500;}
+        .chapter-options .option-button:hover { background: #4A0063; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15);}
+        .chapter-options .option-button .icon { font-size: 1.6em; margin-right: 18px; }
+        #ai-chat-screen .chat-messages { flex-grow: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; background-color: #E8E2EE; }
+        .chat-messages .message { max-width: 75%; padding: 10px 14px; border-radius: var(--border-radius-main); margin-bottom: 10px; font-size: 0.95em; line-height: 1.45; word-wrap: break-word; }
+        .chat-messages .user-message { background-color: var(--pw-purple); color: white; align-self: flex-end; margin-left: auto; border-bottom-right-radius: var(--border-radius-small);}
+        .chat-messages .ai-message { background-color: var(--pw-bg-light); color: var(--pw-text-dark); align-self: flex-start; margin-right: auto; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border-bottom-left-radius: var(--border-radius-small);}
+        #ai-chat-screen .chat-input { display: flex; padding: 12px; border-top: 1px solid #ddd; background-color: #f5f5f5; flex-shrink: 0;}
+        #ai-chat-screen .chat-input input { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; margin-right: 10px; font-family: 'Noto Sans Devanagari', sans-serif; } /* Keep Noto for Hindi input */
+        #ai-chat-screen .chat-input button { padding: 12px 18px; border-radius: 25px; background: var(--pw-purple); color: white; border: none; cursor: pointer; font-weight: bold; }
+        #profile-screen .profile-header { text-align: center; margin-bottom: 25px; padding-top:10px;}
+        #profile-screen .profile-avatar { width: 90px; height: 90px; background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color:white; border-radius: 50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size: 2.8em; font-weight:bold; box-shadow: 0 0 15px rgba(90,0,123,0.3); }
+        #profile-screen h3 {font-weight:700; color:var(--pw-purple);}
+        #profile-screen .info-item { margin-bottom: 10px; font-size: 1em; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+        .modal-content { background-color: #fefefe; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius:var(--border-radius-main); width: 95%; max-width: 380px; max-height: 90vh; overflow-y: auto; position:relative; box-shadow: 0 5px 20px rgba(0,0,0,0.2); display:flex; flex-direction:column;}
+        .modal-content h3 { margin-top:0; color:var(--pw-purple); font-weight:700; border-bottom: 2px solid var(--pw-purple); padding-bottom:10px; margin-bottom:15px; flex-shrink:0;}
+        .modal-close-button { color: #aaa; float: right; font-size: 30px; font-weight: bold; position:absolute; top:15px; right:20px; cursor: pointer; }
+        .modal-mcq-body { flex-grow:1; overflow-y:auto; padding-right:10px; }
+        .mcq-item { margin-bottom: 25px; padding-bottom:15px; border-bottom:1px dashed #eee; } .mcq-item:last-child { border-bottom:none; }
+        .mcq-question { font-weight: bold; margin-bottom: 10px; font-size:1.05em; line-height:1.4;}
+        .mcq-options div { margin-bottom: 8px; padding: 10px; border-radius: var(--border-radius-small); cursor:pointer; border:1px solid #ddd; transition: background-color 0.2s; }
+        .mcq-options div:hover { background-color:#efefff; } .mcq-options div.selected { background-color: var(--pw-blue) !important; color:white; border-color: var(--pw-blue); }
+        .mcq-feedback { margin-top:10px; padding:10px; border-radius:var(--border-radius-small); font-size:0.9em;}
+        .correct { background-color:#d4edda; color:#155724; border-left: 4px solid #28a745; }
+        .incorrect { background-color:#f8d7da; color:#721c24; border-left: 4px solid #dc3545;}
+        .mcq-item .mcq-feedback { display:none; }
+        #mcq-final-score { font-weight:bold; text-align:center; font-size:1.2em; margin-top:20px; padding:15px; background-color:var(--pw-purple); color:white; border-radius:var(--border-radius-small); flex-shrink:0;}
+        #mcq-submit-button { background:var(--pw-pink-accent); color:white; border:none; padding:12px 20px; border-radius:var(--border-radius-small); cursor:pointer; display:block; margin: 20px auto 0 auto; font-weight:bold;}
+        #rewarded-ad-button { background:var(--pw-blue); color:white; border:none; padding:8px 12px; border-radius:var(--border-radius-small); cursor:pointer; font-size:0.8em; margin-left:10px;}
+        #calculator-screen .calculator { width: 90%; max-width: 300px; margin: 20px auto; background-color: #fff; border-radius: var(--border-radius-main); box-shadow: var(--card-shadow); padding: 20px; }
+        #calculator-screen .calc-display { width: 100%; height: 60px; background-color: #f0f0f0; border-radius: var(--border-radius-small); text-align: right; padding: 10px; font-size: 2em; margin-bottom: 20px; box-sizing: border-box; overflow-x: auto; border: 1px solid #ccc; }
+        #calculator-screen .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        #calculator-screen .calc-button { padding: 18px; font-size: 1.2em; border: none; border-radius: var(--border-radius-small); background-color: #e0e0e0; cursor: pointer; transition: background-color 0.2s; }
+        #calculator-screen .calc-button.operator { background-color: var(--pw-blue); color: white; }
+        #calculator-screen .calc-button.equals { background-color: var(--pw-pink-accent); color: white; grid-column: span 2; }
+        #calculator-screen .calc-button.clear { background-color: #ffc107; color: var(--pw-text-dark); }
+
     </style>
 </head>
 <body>
     <h1 class="website-title" data-translate-key="app_title_full">Class 9 Hindi AI Guru</h1>
 
     <div class="app-container">
-        <!-- Ad Placeholders (Same as before) -->
+        <!-- Ad Placeholders -->
         <div id="simulated-banner-ad" class="simulated-banner-ad" style="display:none;">
             <strong data-translate-key="sim_banner_ad">Simulated Banner Ad</strong>
             <span id="banner-ad-id-display"></span>
@@ -156,10 +157,8 @@
         </div>
         <div id="timed-ad-notification" class="timed-ad-notification" data-translate-key="timed_ad_notif">Simulated Timed Interstitial Ad!</div>
 
-
         <!-- Screen 0: Language Selector -->
-        <div id="language-selector-screen" class="screen active no-banner-adjustment">
-            <!-- This screen will be active by default for JS to pick up -->
+        <div id="language-selector-screen" class="screen active no-banner-adjustment"> <!-- Set active here in HTML as JS default might conflict -->
             <h1 data-translate-key="welcome_language">भाषा चुनें / Select Language</h1>
             <p data-translate-key="choose_preferred_language">कृपया अपनी पसंदीदा भाषा चुनें।<br>Please choose your preferred language.</p>
             <div>
@@ -189,10 +188,10 @@
                 </button>
             </div>
         </div>
-
+        
         <!-- Screen 3: Home Dashboard -->
         <div id="home-dashboard" class="screen">
-            <div class="header"> <h1 id="dashboard-greeting" data-translate-key="greeting_user">नमस्ते!</h1> <a href="#" class="profile-button" id="dashboard-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <h1 id="dashboard-greeting" data-translate-key="greeting_user" data-translate-key-static="greeting_user_static_key_if_needed">नमस्ते, {userName}!</h1> <a href="#" class="profile-button" id="dashboard-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="content">
                 <div class="dashboard-grid">
                     <div class="dashboard-card" onclick="navigateTo('subject-screen')"><div class="icon">📘</div> <div class="title" data-translate-key="subjects_tile">विषय</div></div>
@@ -200,44 +199,27 @@
                     <div class="dashboard-card" onclick="navigateTo('subject-screen', { targetFeature: 'mcq' })"><div class="icon">📝</div> <div class="title" data-translate-key="practice_mcq_tile">अभ्यास MCQ</div></div>
                     <div class="dashboard-card" onclick="navigateTo('subject-screen', { targetFeature: 'notes' })"><div class="icon">📚</div> <div class="title" data-translate-key="notes_tile">नोट्स</div></div>
                     <div class="dashboard-card" onclick="navigateTo('calculator-screen')"><div class="icon">🧮</div> <div class="title" data-translate-key="calculator_tile">कैलकुलेटर</div></div>
-                    <div class="dashboard-card" onclick="alert(uiStrings[currentLanguage]['search_wip'])"><div class="icon">🔍</div> <div class="title" data-translate-key="search_tile">खोजें</div></div>
-
-                    <!-- New Game Tiles -->
-                    <div class="dashboard-card feature-card" onclick="navigateTo('game-select-screen')">
-                        <div class="icon">🎮</div> <div class="title" data-translate-key="games_tile">शैक्षिक खेल</div>
-                    </div>
-                     <!-- New SRS Tile -->
-                    <div class="dashboard-card feature-card" onclick="navigateTo('srs-info-screen')">
-                        <div class="icon">🧠</div> <div class="title" data-translate-key="srs_flashcards_tile">रिवीजन फ़्लैशकार्ड (SRS)</div>
-                    </div>
-
-                    <div class="dashboard-card motivation-card">
-                        <div class="icon">🎯</div> <div class="title" data-translate-key="motivation_tile">आज की प्रेरणा</div>
-                        <p id="daily-motivation-quote" data-translate-key="motivation_quote_default">मेहनत का फल हमेशा मीठा होता है।</p>
-                    </div>
+                    <div class="dashboard-card" onclick="alert(uiStrings[currentLanguage]['search_wip'] || 'Search coming soon!')"><div class="icon">🔍</div> <div class="title" data-translate-key="search_tile">खोजें</div></div>
+                    <div class="dashboard-card feature-card" onclick="navigateTo('game-select-screen')"> <div class="icon">🎮</div> <div class="title" data-translate-key="games_tile">शैक्षिक खेल</div> </div>
+                    <div class="dashboard-card feature-card" onclick="navigateTo('srs-info-screen')"> <div class="icon">🧠</div> <div class="title" data-translate-key="srs_flashcards_tile">रिवीजन फ़्लैशकार्ड (SRS)</div> </div>
+                    <div class="dashboard-card motivation-card"> <div class="icon">🎯</div> <div class="title" data-translate-key="motivation_tile">आज की प्रेरणा</div> <p id="daily-motivation-quote" data-translate-key="motivation_quote_default">मेहनत का फल हमेशा मीठा होता है।</p> </div>
                 </div>
             </div>
         </div>
 
         <!-- Game Selection Screen -->
         <div id="game-select-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_game_title">खेल चुनें</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_game_title" data-translate-key-static="select_game_title">खेल चुनें</h2> <a href="#" class="profile-button" id="game-select-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="content">
-                <div class="list-item-card" onclick="navigateTo('game-match-screen', {gameId: 'sci_ch1_match'})">
-                    <div class="icon">🔄</div> <div class="title" data-translate-key="match_columns_game">मिलान करो: पदार्थ की अवस्थाएँ</div> <div class="arrow">→</div>
-                </div>
-                <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'])">
-                    <div class="icon">🧩</div> <div class="title" data-translate-key="puzzle_game_placeholder">शब्द पहेली (जल्द आ रहा है)</div> <div class="arrow">→</div>
-                </div>
-                 <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'])">
-                    <div class="icon">⏱️</div> <div class="title" data-translate-key="quiz_challenge_placeholder">क्विज़ चुनौती (जल्द आ रहा है)</div> <div class="arrow">→</div>
-                </div>
+                <div class="list-item-card" onclick="navigateTo('game-match-screen', {gameId: 'sci_ch1_match'})"> <div class="icon">🔄</div> <div class="title" data-translate-key="match_columns_game">मिलान करो: पदार्थ की अवस्थाएँ</div> <div class="arrow">→</div> </div>
+                <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'] || 'Game coming soon!')"> <div class="icon">🧩</div> <div class="title" data-translate-key="puzzle_game_placeholder">शब्द पहेली (जल्द आ रहा है)</div> <div class="arrow">→</div> </div>
+                <div class="list-item-card" onclick="alert(uiStrings[currentLanguage]['game_wip'] || 'Game coming soon!')"> <div class="icon">⏱️</div> <div class="title" data-translate-key="quiz_challenge_placeholder">क्विज़ चुनौती (जल्द आ रहा है)</div> <div class="arrow">→</div> </div>
             </div>
         </div>
         
         <!-- SRS Info Screen (Placeholder) -->
         <div id="srs-info-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="srs_info_title">रिवीजन फ़्लैशकार्ड (SRS)</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="srs_info_title" data-translate-key-static="srs_info_title">रिवीजन फ़्लैशकार्ड (SRS)</h2> <a href="#" class="profile-button" id="srs-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="content" style="text-align:center; padding-top: 50px;">
                 <div class="icon" style="font-size:4em; color:var(--pw-purple); margin-bottom:20px;">🧠</div>
                 <h3 data-translate-key="srs_coming_soon_title" style="color:var(--pw-purple);">यह सुविधा जल्द आ रही है!</h3>
@@ -247,18 +229,12 @@
 
         <!-- Game: Match the Columns Screen -->
         <div id="game-match-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('game-select-screen')">←</button> <h2 id="match-game-title" data-translate-key="match_columns_game_title">मिलान करो</h2> <a href="#" class="profile-button" onclick="navigateTo('profile-screen')">👤</a></div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('game-select-screen')">←</button> <h2 id="match-game-title" data-translate-key="match_columns_game_title" data-translate-key-static="match_columns_game_title">मिलान करो</h2> <a href="#" class="profile-button" id="game-match-profile-icon" onclick="navigateTo('profile-screen')">👤</a></div>
             <div class="content game-container">
                 <h3 id="match-game-instructions" data-translate-key="match_instructions">कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।</h3>
                 <div class="match-columns-area">
-                    <div class="match-column" id="match-column-a">
-                        <h4 data-translate-key="column_a">कॉलम A</h4>
-                        <!-- Items added by JS -->
-                    </div>
-                    <div class="match-column" id="match-column-b">
-                        <h4 data-translate-key="column_b">कॉलम B</h4>
-                        <!-- Items added by JS -->
-                    </div>
+                    <div class="match-column" id="match-column-a"> <h4 data-translate-key="column_a">कॉलम A</h4> </div>
+                    <div class="match-column" id="match-column-b"> <h4 data-translate-key="column_b">कॉलम B</h4> </div>
                 </div>
                 <div id="match-game-feedback"></div>
                 <button id="match-game-submit" class="styled-button primary-action-button" style="display:none;" onclick="submitMatchGame()" data-translate-key="submit_btn">सबमिट करें</button>
@@ -268,13 +244,13 @@
 
         <!-- Screen 4: Subject Screen -->
         <div id="subject-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_subject_title">विषय चुनें</h2> <a href="#" class="profile-button" id="subject-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="select_subject_title" data-translate-key-static="select_subject_title">विषय चुनें</h2> <a href="#" class="profile-button" id="subject-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="content" id="subject-list-content"></div>
         </div>
 
         <!-- Screen 4.1: Chapter List Screen -->
         <div id="chapter-list-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('subject-screen')">←</button> <h2 id="chapter-list-title" data-translate-key="chapters_title">अध्याय</h2> <a href="#" class="profile-button" id="chapter-list-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('subject-screen')">←</button> <h2 id="chapter-list-title" data-translate-key="chapters_title" data-translate-key-static="chapters_title">अध्याय</h2> <a href="#" class="profile-button" id="chapter-list-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="content" id="chapter-list-items"></div>
         </div>
 
@@ -288,10 +264,10 @@
                 <a href="#" class="option-button" id="ask-doubt-button"> <span class="icon">💬</span> <span data-translate-key="ask_doubt_btn">शंका पूछें (AI)</span> </a>
             </div>
         </div>
-
+        
         <!-- Screen 5: AI Doubt Solver -->
         <div id="ai-chat-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="goBackToPreviousScreenOr('home-dashboard')">←</button> <h2 data-translate-key="ai_doubt_solver_title_header">AI शंका समाधान</h2> <a href="#" class="profile-button" id="ai-chat-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="header"> <button class="back-button" onclick="goBackToPreviousScreenOr('home-dashboard')">←</button> <h2 data-translate-key="ai_doubt_solver_title_header" data-translate-key-static="ai_doubt_solver_title_header">AI शंका समाधान</h2> <a href="#" class="profile-button" id="ai-chat-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
             <div class="ai-chat-controls">
                 <label for="eli5-toggle" data-translate-key="eli5_mode_label">सरल भाषा में समझाएं (ELI5 Mode):</label>
                 <input type="checkbox" id="eli5-toggle" onchange="toggleEli5Mode(this.checked)">
@@ -300,9 +276,9 @@
             <div class="chat-input"> <input type="text" id="chat-input-field" data-translate-key="chat_input_placeholder" placeholder="अपना प्रश्न यहाँ लिखें..."> <button onclick="sendChatMessage()" data-translate-key="send_btn">भेजें</button> </div>
         </div>
 
-        <!-- Screen 10: Profile Screen (translation keys for static text) -->
+        <!-- Screen 10: Profile Screen -->
         <div id="profile-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="my_profile_title">मेरी प्रोफ़ाइल</h2> <div></div> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="my_profile_title" data-translate-key-static="my_profile_title">मेरी प्रोफ़ाइल</h2> <div></div> </div>
             <div class="content">
                 <div class="profile-header"> <div class="profile-avatar" id="profile-avatar-initials">👤</div> <h3 id="profile-user-name">[छात्र का नाम]</h3> </div>
                 <div class="info-item"><strong data-translate-key="email_label">ईमेल:</strong> <span id="profile-user-email">[student@example.com]</span></div>
@@ -316,8 +292,19 @@
 
         <!-- Screen 12: Calculator Screen -->
         <div id="calculator-screen" class="screen">
-            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="calculator_title_header">कैलकुलेटर</h2> <a href="#" class="profile-button" id="calculator-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
-            <div class="content"> <!-- ... Calculator HTML ... --> </div>
+            <div class="header"> <button class="back-button" onclick="navigateTo('home-dashboard')">←</button> <h2 data-translate-key="calculator_title_header" data-translate-key-static="calculator_title_header">कैलकुलेटर</h2> <a href="#" class="profile-button" id="calculator-profile-icon" onclick="navigateTo('profile-screen')">👤</a> </div>
+            <div class="content">
+                 <div class="calculator">
+                    <div id="calc-display" class="calc-display">0</div>
+                    <div class="calc-buttons">
+                        <button class="calc-button clear" onclick="clearDisplay()">AC</button> <button class="calc-button" onclick="deleteLast()">DEL</button> <button class="calc-button operator" onclick="appendOperator('%')">%</button> <button class="calc-button operator" onclick="appendOperator('/')">/</button>
+                        <button class="calc-button" onclick="appendNumber('7')">7</button> <button class="calc-button" onclick="appendNumber('8')">8</button> <button class="calc-button" onclick="appendNumber('9')">9</button> <button class="calc-button operator" onclick="appendOperator('*')">*</button>
+                        <button class="calc-button" onclick="appendNumber('4')">4</button> <button class="calc-button" onclick="appendNumber('5')">5</button> <button class="calc-button" onclick="appendNumber('6')">6</button> <button class="calc-button operator" onclick="appendOperator('-')">-</button>
+                        <button class="calc-button" onclick="appendNumber('1')">1</button> <button class="calc-button" onclick="appendNumber('2')">2</button> <button class="calc-button" onclick="appendNumber('3')">3</button> <button class="calc-button operator" onclick="appendOperator('+')">+</button>
+                        <button class="calc-button" onclick="appendNumber('0')">0</button> <button class="calc-button" onclick="appendNumber('.')">.</button> <button class="calc-button equals" onclick="calculateResult()">=</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Modal for Notes, MCQs, AI Key Points -->
@@ -325,9 +312,7 @@
             <div class="modal-content">
                 <span class="modal-close-button" onclick="closeModal()">×</span>
                 <h3 id="modal-title">विवरण</h3>
-                <div id="modal-extra-controls" style="text-align:right; margin-bottom:10px;">
-                    <!-- Audio Button will be added here by JS for notes -->
-                </div>
+                <div id="modal-extra-controls" style="text-align:right; margin-bottom:10px;"></div>
                 <div class="modal-mcq-body" id="modal-body"></div>
                 <div id="mcq-final-score" style="display:none;"></div>
                 <button id="mcq-submit-button" style="display:none;" onclick="submitMcqQuiz()" data-translate-key="submit_btn">सबमिट करें</button>
@@ -336,9 +321,14 @@
     </div>
 
 <script>
-    // --- Internationalization (i18n) ---
+    // --- Global Variables ---
+    let currentScreenId = 'language-selector-screen';
+    let previousScreenId = 'language-selector-screen';
+    let navigationParams = {};
     let currentLanguage = 'hi'; // Default
-    const uiStrings = {
+
+    // --- Internationalization (i18n) ---
+    const uiStrings = { /* ... Same extensive uiStrings object from previous response ... */
         hi: {
             app_title_full: "कक्षा 9 हिंदी AI गुरु",
             welcome_language: "भाषा चुनें",
@@ -349,547 +339,500 @@
             login_prompt: "सीखने की अपनी यात्रा शुरू करें।",
             google_signin_btn: "गूगल से साइन इन करें",
             guest_continue_btn: "अतिथि के रूप में जारी रखें",
-            greeting_user: "नमस्ते, {userName}!", // Placeholder
-            subjects_tile: "विषय",
-            ai_doubt_solver_tile: "AI शंका समाधान",
-            practice_mcq_tile: "अभ्यास MCQ",
-            notes_tile: "नोट्स",
-            calculator_tile: "कैलकुलेटर",
-            search_tile: "खोजें",
-            games_tile: "शैक्षिक खेल",
-            srs_flashcards_tile: "रिवीजन फ़्लैशकार्ड (SRS)",
-            motivation_tile: "आज की प्रेरणा",
-            motivation_quote_default: "मेहनत का फल हमेशा मीठा होता है।",
-            sim_banner_ad: "नकली बैनर विज्ञापन",
-            sim_interstitial_ad: "नकली इंटरस्टीशियल विज्ञापन",
-            interstitial_placeholder_text: "यह एक फ़ुल-स्क्रीन विज्ञापन के लिए प्लेसहोल्डर है।",
-            close_ad_btn: "विज्ञापन बंद करें",
-            timed_ad_notif: "नकली समयबद्ध इंटरस्टीशियल विज्ञापन!",
-            select_game_title: "खेल चुनें",
-            match_columns_game: "मिलान करो: पदार्थ की अवस्थाएँ",
-            puzzle_game_placeholder: "शब्द पहेली (जल्द आ रहा है)",
-            quiz_challenge_placeholder: "क्विज़ चुनौती (जल्द आ रहा है)",
-            srs_info_title: "रिवीजन फ़्लैशकार्ड (SRS)",
-            srs_coming_soon_title: "यह सुविधा जल्द आ रही है!",
-            srs_coming_soon_desc: "Spaced Repetition System (SRS) आपको महत्वपूर्ण तथ्यों और अवधारणाओं को लंबे समय तक याद रखने में मदद करेगा।",
-            match_columns_game_title: "मिलान करो",
-            match_instructions: "कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।",
-            column_a: "कॉलम A", column_b: "कॉलम B",
-            submit_btn: "सबमिट करें", reset_btn: "पुनः आरंभ करें",
-            select_subject_title: "विषय चुनें",
-            chapters_title: "अध्याय",
-            view_notes_btn: "नोट्स देखें",
-            view_ai_keys_btn: "मुख्य बिंदु देखें (AI)",
-            practice_mcq_btn: "अभ्यास MCQ",
-            ask_doubt_btn: "शंका पूछें (AI)",
-            ai_doubt_solver_title_header: "AI शंका समाधान",
-            eli5_mode_label: "सरल भाषा में समझाएं (ELI5 Mode):",
-            ai_initial_greeting: "नमस्ते! आप मुझसे कक्षा 9 के किसी भी विषय पर प्रश्न पूछ सकते हैं।",
-            chat_input_placeholder: "अपना प्रश्न यहाँ लिखें...",
-            send_btn: "भेजें",
-            my_profile_title: "मेरी प्रोफ़ाइल",
-            email_label: "ईमेल:", class_label: "कक्षा:",
-            performance_tracking_title: "प्रदर्शन ट्रैकिंग (उदाहरण):",
-            avg_score_label: "कुल प्रश्नोत्तरी औसत स्कोर:",
-            quizzes_completed_label: "पूर्ण की गई प्रश्नोत्तरी:",
-            logout_btn: "लॉग आउट करें",
+            greeting_user: "नमस्ते, {userName}!",
+            subjects_tile: "विषय", ai_doubt_solver_tile: "AI शंका समाधान", practice_mcq_tile: "अभ्यास MCQ", notes_tile: "नोट्स", calculator_tile: "कैलकुलेटर", search_tile: "खोजें", games_tile: "शैक्षिक खेल", srs_flashcards_tile: "रिवीजन फ़्लैशकार्ड (SRS)", motivation_tile: "आज की प्रेरणा", motivation_quote_default: "मेहनत का फल हमेशा मीठा होता है।",
+            sim_banner_ad: "नकली बैनर विज्ञापन", sim_interstitial_ad: "नकली इंटरस्टीशियल विज्ञापन", interstitial_placeholder_text: "यह एक फ़ुल-स्क्रीन विज्ञापन के लिए प्लेसहोल्डर है।", close_ad_btn: "विज्ञापन बंद करें", timed_ad_notif: "नकली समयबद्ध इंटरस्टीशियल विज्ञापन!",
+            select_game_title: "खेल चुनें", match_columns_game: "मिलान करो: पदार्थ की अवस्थाएँ", puzzle_game_placeholder: "शब्द पहेली (जल्द आ रहा है)", quiz_challenge_placeholder: "क्विज़ चुनौती (जल्द आ रहा है)",
+            srs_info_title: "रिवीजन फ़्लैशकार्ड (SRS)", srs_coming_soon_title: "यह सुविधा जल्द आ रही है!", srs_coming_soon_desc: "Spaced Repetition System (SRS) आपको महत्वपूर्ण तथ्यों और अवधारणाओं को लंबे समय तक याद रखने में मदद करेगा।",
+            match_columns_game_title: "मिलान करो", match_instructions: "कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।", column_a: "कॉलम A", column_b: "कॉलम B", submit_btn: "सबमिट करें", reset_btn: "पुनः आरंभ करें",
+            select_subject_title: "विषय चुनें", chapters_title: "अध्याय", view_notes_btn: "नोट्स देखें", view_ai_keys_btn: "मुख्य बिंदु देखें (AI)", practice_mcq_btn: "अभ्यास MCQ", ask_doubt_btn: "शंका पूछें (AI)",
+            ai_doubt_solver_title_header: "AI शंका समाधान", eli5_mode_label: "सरल भाषा में समझाएं (ELI5 Mode):", ai_initial_greeting: "नमस्ते! आप मुझसे कक्षा 9 के किसी भी विषय पर प्रश्न पूछ सकते हैं।", chat_input_placeholder: "अपना प्रश्न यहाँ लिखें...", send_btn: "भेजें",
+            my_profile_title: "मेरी प्रोफ़ाइल", email_label: "ईमेल:", class_label: "कक्षा:", performance_tracking_title: "प्रदर्शन ट्रैकिंग (उदाहरण):", avg_score_label: "कुल प्रश्नोत्तरी औसत स्कोर:", quizzes_completed_label: "पूर्ण की गई प्रश्नोत्तरी:", logout_btn: "लॉग आउट करें",
             calculator_title_header: "कैलकुलेटर",
-            game_wip: "यह खेल अभी विकास में है।",
-            search_wip: "खोज सुविधा जल्द ही लागू की जाएगी।",
-            audio_notes_btn: "ऑडियो सुनें",
-            audio_playing_sim: "ऑडियो चल रहा है (सिमुलेशन)...",
-            ai_keys_title_modal: "मुख्य बिंदु (AI द्वारा उत्पन्न - सिमुलेशन)",
-            error_text: "त्रुटि"
+            game_wip: "यह खेल अभी विकास में है।", search_wip: "खोज सुविधा जल्द ही लागू की जाएगी।",
+            audio_notes_btn: "ऑडियो सुनें", audio_playing_sim: "ऑडियो चल रहा है (सिमुलेशन)...", ai_keys_title_modal: "मुख्य बिंदु (AI द्वारा उत्पन्न - सिमुलेशन)",
+            error_text: "त्रुटि", not_available: "उपलब्ध नहीं",
+            // Game specific translations for sci_ch1_match
+            solid_state: "ठोस अवस्था", liquid_state: "द्रव अवस्था", gaseous_state: "गैसीय अवस्था", melting_point: "गलनांक",
+            fixed_shape_volume: "निश्चित आकार और आयतन", no_fixed_shape_volume: "निश्चित आकार या आयतन नहीं", fixed_volume_no_shape: "निश्चित आयतन, आकार नहीं", solid_to_liquid_temp: "ठोस से द्रव में परिवर्तन का ताप",
+             subjects: { science_subj_hi: "विज्ञान", maths_subj_hi: "गणित", sst_subj_hi: "सामाजिक विज्ञान", hindi_subj_hi: "हिन्दी" },
+            chapters: { sci_ch1_hi: "हमारे आस-पास के पदार्थ", sci_ch2_hi: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?" }
         },
         en: {
             app_title_full: "Class 9 AI Guru (Website)",
-            welcome_language: "Select Language",
-            choose_preferred_language: "Please choose your preferred language.",
-            app_name_splash: "Class 9 AI Guru",
-            app_tagline_splash: "Your Personal AI Guru",
-            welcome_login: "Welcome!",
-            login_prompt: "Start your learning journey.",
-            google_signin_btn: "Sign in with Google",
-            guest_continue_btn: "Continue as Guest",
-            greeting_user: "Hello, {userName}!",
-            subjects_tile: "Subjects",
-            ai_doubt_solver_tile: "AI Doubt Solver",
-            practice_mcq_tile: "Practice MCQs",
-            notes_tile: "Notes",
-            calculator_tile: "Calculator",
-            search_tile: "Search",
-            games_tile: "Educational Games",
-            srs_flashcards_tile: "Revision Flashcards (SRS)",
-            motivation_tile: "Motivation of the Day",
-            motivation_quote_default: "Hard work always pays off.",
-            sim_banner_ad: "Simulated Banner Ad",
-            sim_interstitial_ad: "Simulated Interstitial Ad",
-            interstitial_placeholder_text: "This is a placeholder for a full-screen ad.",
-            close_ad_btn: "Close Ad",
-            timed_ad_notif: "Simulated Timed Interstitial Ad!",
-            select_game_title: "Select Game",
-            match_columns_game: "Match: States of Matter",
-            puzzle_game_placeholder: "Word Puzzle (Coming Soon)",
-            quiz_challenge_placeholder: "Quiz Challenge (Coming Soon)",
-            srs_info_title: "Revision Flashcards (SRS)",
-            srs_coming_soon_title: "This Feature is Coming Soon!",
-            srs_coming_soon_desc: "The Spaced Repetition System (SRS) will help you remember important facts and concepts for longer.",
-            match_columns_game_title: "Match the Columns",
-            match_instructions: "Match items from Column A with the correct items in Column B.",
-            column_a: "Column A", column_b: "Column B",
-            submit_btn: "Submit", reset_btn: "Reset",
-            select_subject_title: "Select Subject",
-            chapters_title: "Chapters",
-            view_notes_btn: "View Notes",
-            view_ai_keys_btn: "View Key Points (AI)",
-            practice_mcq_btn: "Practice MCQs",
-            ask_doubt_btn: "Ask Doubt (AI)",
-            ai_doubt_solver_title_header: "AI Doubt Solver",
-            eli5_mode_label: "Explain Like I'm 5 (ELI5 Mode):",
-            ai_initial_greeting: "Hello! You can ask me any question about Class 9 subjects.",
-            chat_input_placeholder: "Type your question here...",
-            send_btn: "Send",
-            my_profile_title: "My Profile",
-            email_label: "Email:", class_label: "Class:",
-            performance_tracking_title: "Performance Tracking (Example):",
-            avg_score_label: "Overall Quiz Average Score:",
-            quizzes_completed_label: "Quizzes Completed:",
-            logout_btn: "Logout",
+            welcome_language: "Select Language", choose_preferred_language: "Please choose your preferred language.", app_name_splash: "Class 9 AI Guru", app_tagline_splash: "Your Personal AI Guru", welcome_login: "Welcome!", login_prompt: "Start your learning journey.", google_signin_btn: "Sign in with Google", guest_continue_btn: "Continue as Guest", greeting_user: "Hello, {userName}!",
+            subjects_tile: "Subjects", ai_doubt_solver_tile: "AI Doubt Solver", practice_mcq_tile: "Practice MCQs", notes_tile: "Notes", calculator_tile: "Calculator", search_tile: "Search", games_tile: "Educational Games", srs_flashcards_tile: "Revision Flashcards (SRS)", motivation_tile: "Motivation of the Day", motivation_quote_default: "Hard work always pays off.",
+            sim_banner_ad: "Simulated Banner Ad", sim_interstitial_ad: "Simulated Interstitial Ad", interstitial_placeholder_text: "This is a placeholder for a full-screen ad.", close_ad_btn: "Close Ad", timed_ad_notif: "Simulated Timed Interstitial Ad!",
+            select_game_title: "Select Game", match_columns_game: "Match: States of Matter", puzzle_game_placeholder: "Word Puzzle (Coming Soon)", quiz_challenge_placeholder: "Quiz Challenge (Coming Soon)",
+            srs_info_title: "Revision Flashcards (SRS)", srs_coming_soon_title: "This Feature is Coming Soon!", srs_coming_soon_desc: "The Spaced Repetition System (SRS) will help you remember important facts and concepts for longer.",
+            match_columns_game_title: "Match the Columns", match_instructions: "Match items from Column A with the correct items in Column B.", column_a: "Column A", column_b: "Column B", submit_btn: "Submit", reset_btn: "Reset",
+            select_subject_title: "Select Subject", chapters_title: "Chapters", view_notes_btn: "View Notes", view_ai_keys_btn: "View Key Points (AI)", practice_mcq_btn: "Practice MCQs", ask_doubt_btn: "Ask Doubt (AI)",
+            ai_doubt_solver_title_header: "AI Doubt Solver", eli5_mode_label: "Explain Like I'm 5 (ELI5 Mode):", ai_initial_greeting: "Hello! You can ask me any question about Class 9 subjects.", chat_input_placeholder: "Type your question here...", send_btn: "Send",
+            my_profile_title: "My Profile", email_label: "Email:", class_label: "Class:", performance_tracking_title: "Performance Tracking (Example):", avg_score_label: "Overall Quiz Average Score:", quizzes_completed_label: "Quizzes Completed:", logout_btn: "Logout",
             calculator_title_header: "Calculator",
-            game_wip: "This game is under development.",
-            search_wip: "Search functionality will be implemented soon.",
-            audio_notes_btn: "Listen to Audio",
-            audio_playing_sim: "Playing audio (simulation)...",
-            ai_keys_title_modal: "Key Points (AI Generated - Simulation)",
-            error_text: "Error"
+            game_wip: "This game is under development.", search_wip: "Search functionality will be implemented soon.",
+            audio_notes_btn: "Listen to Audio", audio_playing_sim: "Playing audio (simulation)...", ai_keys_title_modal: "Key Points (AI Generated - Simulation)",
+            error_text: "Error", not_available: "N/A",
+            // Game specific translations for sci_ch1_match
+            solid_state: "Solid State", liquid_state: "Liquid State", gaseous_state: "Gaseous State", melting_point: "Melting Point",
+            fixed_shape_volume: "Fixed shape and volume", no_fixed_shape_volume: "No fixed shape or volume", fixed_volume_no_shape: "Fixed volume, no fixed shape", solid_to_liquid_temp: "Temp. of solid to liquid change",
+            subjects: { science_subj_en: "Science", maths_subj_en: "Mathematics", sst_subj_en: "Social Science", hindi_subj_en: "Hindi" },
+            chapters: { sci_ch1_en: "Matter in Our Surroundings", sci_ch2_en: "Is Matter Around Us Pure?" }
         }
     };
-
     function applyTranslations() {
+        const langToUse = uiStrings[currentLanguage] ? currentLanguage : 'hi';
         document.querySelectorAll('[data-translate-key]').forEach(element => {
             const key = element.getAttribute('data-translate-key');
-            let translation = uiStrings[currentLanguage][key] || uiStrings['en'][key] || `Missing: ${key}`; // Fallback
-            
-            // Handle placeholders like {userName}
-            if (translation.includes("{userName}") && currentUser) {
-                translation = translation.replace("{userName}", currentUser.name);
-            }
-            
-            if (element.tagName === 'INPUT' && element.type === 'text' && element.placeholder) {
-                 element.placeholder = translation;
-            } else {
-                element.innerHTML = translation; // Use innerHTML to support icons within buttons
+            let translation = (uiStrings[langToUse] && uiStrings[langToUse][key]) || (uiStrings['en'] && uiStrings['en'][key]) || `Missing: ${key}`;
+            if (translation.includes("{userName}") && currentUser) { translation = translation.replace("{userName}", currentUser.name); }
+            if (element.tagName === 'INPUT' && element.type === 'text' && element.hasAttribute('placeholder')) { element.placeholder = translation; }
+            else {
+                let iconHTML = ''; const iconElement = element.querySelector('.icon');
+                if (iconElement) { iconHTML = iconElement.outerHTML; }
+                element.innerHTML = iconHTML + translation;
             }
         });
-        // Special case for dynamic titles in navigateTo
-        if(document.getElementById(currentScreenId)) { // Ensure current screen is valid
-            const currentScreenHeaderTitle = document.querySelector(`#${currentScreenId} .header h2`);
-            if (currentScreenHeaderTitle && currentScreenHeaderTitle.dataset.translateKeyStatic) {
-                currentScreenHeaderTitle.innerText = uiStrings[currentLanguage][currentScreenHeaderTitle.dataset.translateKeyStatic];
+        const currentScreenElement = document.getElementById(currentScreenId);
+        if (currentScreenElement) {
+            const headerTitleElement = currentScreenElement.querySelector('.header h2[data-translate-key-static]');
+            if (headerTitleElement && uiStrings[langToUse] && uiStrings[langToUse][headerTitleElement.dataset.translateKeyStatic]) {
+                headerTitleElement.innerText = uiStrings[langToUse][headerTitleElement.dataset.translateKeyStatic];
             }
         }
-        // Update dynamic subject/chapter names IF data is translated (simplified for demo)
-        // In a real app, ncert_data itself would be language-specific or have translations.
-        if(currentScreenId === 'chapter-list-screen' && navigationParams.subjectNameKey){
-            document.getElementById('chapter-list-title').innerText = (uiStrings[currentLanguage].subjects && uiStrings[currentLanguage].subjects[navigationParams.subjectNameKey]) ? `${uiStrings[currentLanguage].subjects[navigationParams.subjectNameKey]} - ${uiStrings[currentLanguage].chapters_title}` : `${navigationParams.subjectName} - ${uiStrings[currentLanguage].chapters_title}`;
+        const dashboardGreetingEl = document.getElementById('dashboard-greeting');
+        if (dashboardGreetingEl && uiStrings[langToUse] && uiStrings[langToUse]['greeting_user']) {
+            let greetingText = uiStrings[langToUse]['greeting_user'];
+            dashboardGreetingEl.innerText = greetingText.replace("{userName}", currentUser.name);
         }
-        if(currentScreenId === 'chapter-detail-screen' && navigationParams.chapterTitleKey){
-             document.getElementById('chapter-detail-title').innerText = (uiStrings[currentLanguage].chapters && uiStrings[currentLanguage].chapters[navigationParams.chapterTitleKey]) ? uiStrings[currentLanguage].chapters[navigationParams.chapterTitleKey] : navigationParams.chapter?.title;
+        if (currentScreenId === 'subject-screen') initializeSubjectScreen();
+        if (currentScreenId === 'chapter-list-screen' && navigationParams.subjectKey) {
+            const subjectData = ncert_data[langToUse]?.[navigationParams.subjectKey] || ncert_data.hi?.[navigationParams.subjectKey];
+            populateChapterList(navigationParams.subjectKey, subjectData?.subjectName || navigationParams.subjectKey, navigationParams.subjectNameKey);
+        }
+        if(currentScreenId === 'chapter-detail-screen' && navigationParams.chapter && navigationParams.subjectKey){
+            const chapterData = ncert_data[langToUse]?.[navigationParams.subjectKey]?.chapters.find(c=>c.id === navigationParams.chapter.id);
+            const chapterTitle = chapterData ? chapterData.title : navigationParams.chapter.title;
+            document.getElementById('chapter-detail-title').innerText = chapterTitle;
+        }
+        if (currentScreenId === 'game-match-screen' && matchGameData.titleKey && uiStrings[langToUse] && uiStrings[langToUse][matchGameData.titleKey]) {
+            document.getElementById('match-game-title').innerText = uiStrings[langToUse][matchGameData.titleKey];
+            // Potentially re-render game items if their text needs update
+            const instructionsEl = document.getElementById('match-game-instructions');
+            if(instructionsEl && uiStrings[langToUse][instructionsEl.dataset.translateKey]){
+                instructionsEl.innerText = uiStrings[langToUse][instructionsEl.dataset.translateKey];
+            }
+            // Re-render column headers
+             document.querySelector('#match-column-a h4').innerText = uiStrings[langToUse]['column_a'];
+             document.querySelector('#match-column-b h4').innerText = uiStrings[langToUse]['column_b'];
         }
     }
-
     function setLanguage(lang) {
+        console.log("Setting language to:", lang);
         currentLanguage = lang;
         localStorage.setItem('appLanguage', lang);
-        document.documentElement.lang = lang; // Set HTML lang attribute
+        document.documentElement.lang = lang;
         applyTranslations();
-        if (currentScreenId === 'language-selector-screen') {
-            navigateTo('splash-screen'); // Move to next screen after language selection
+        const motivationQuotes = { hi: ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।", "आज की मेहनत कल की सफलता है।"], en: ["Hard work always pays off.", "Education is the most powerful weapon.", "Today's effort is tomorrow's success."] };
+        const motQuoteEl = document.getElementById('daily-motivation-quote');
+        if (motQuoteEl && motivationQuotes[currentLanguage]) { motQuoteEl.innerText = motivationQuotes[currentLanguage][Math.floor(Math.random() * motivationQuotes[currentLanguage].length)]; }
+        if (document.getElementById('language-selector-screen').classList.contains('active')) {
+            console.log("Navigating from language selector to splash screen.");
+            navigateTo('splash-screen');
+        } else { console.warn("setLanguage called, but not on the language selector screen. Current screen:", currentScreenId); }
+    }
+
+    // --- AdManager Simulation ---
+    const adManager = { /* ... Same extensive AdManager object from previous version ... */
+        ids: { banner: "ca-app-pub-2059477692919063/2354752864", interstitial: "ca-app-pub-2059477692919063/3733646664", rewarded: "ca-app-pub-2059477692919063/8833095951" },
+        aiQueryCount: 0, mcqQuizCount: 0, timedAdInterval: null,
+        init: function() { document.getElementById('banner-ad-id-display').innerText = `ID: ${this.ids.banner}`; this.timedAdInterval = setInterval(() => { console.log("Simulated 2-min timer: Time to show an interstitial (if appropriate)."); const timedAdNotification = document.getElementById('timed-ad-notification'); if (timedAdNotification) { timedAdNotification.style.display = 'block'; setTimeout(() => { timedAdNotification.style.display = 'none';}, 3000); } }, 30000); /* DEMO: 30s */ },
+        showBanner: function(show = true) { const bannerEl = document.getElementById('simulated-banner-ad'); if (bannerEl) bannerEl.style.display = show ? 'flex' : 'none'; },
+        showInterstitial: function(reason = "Triggered Ad") { console.log(`Simulating Interstitial Ad. Reason: ${reason}. ID: ${this.ids.interstitial}`); const interstitialIdEl = document.getElementById('interstitial-ad-id-display'); if (interstitialIdEl) interstitialIdEl.innerText = `ID: ${this.ids.interstitial}\nReason: ${reason}`; const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay'); if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'flex'; },
+        hideInterstitial: function() { const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay'); if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'none'; },
+        triggerInterstitialIfNeeded: function(type) { if (type === 'ai') { this.aiQueryCount++; if (this.aiQueryCount >= 2) { this.showInterstitial( (uiStrings[currentLanguage] && uiStrings[currentLanguage].after_2_ai_queries) || "After 2 AI Queries"); this.aiQueryCount = 0; } } else if (type === 'mcq') { this.showInterstitial((uiStrings[currentLanguage] && uiStrings[currentLanguage].after_1_mcq) || "After 1 MCQ Quiz"); } },
+        promptRewardedAd: function(rewardCallback) { const proceed = confirm((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_prompt_part1 || `Simulated Rewarded Ad (ID: ${this.ids.rewarded}):\n\n`) + ((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_prompt_part2) || `Would you like to watch an ad for a hint?`)); if (proceed) { alert((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_watched_sim) || "Imagine you watched the ad."); if (rewardCallback) rewardCallback(); } },
+    };
+    uiStrings.hi.after_2_ai_queries = "2 AI प्रश्नों के बाद"; uiStrings.en.after_2_ai_queries = "After 2 AI Queries";
+    uiStrings.hi.after_1_mcq = "1 MCQ क्विज़ के बाद"; uiStrings.en.after_1_mcq = "After 1 MCQ Quiz";
+    uiStrings.hi.rewarded_ad_prompt_part1 = `नकली पुरस्कृत विज्ञापन (ID: ${adManager.ids.rewarded}):\n\n`; uiStrings.en.rewarded_ad_prompt_part1 = `Simulated Rewarded Ad (ID: ${adManager.ids.rewarded}):\n\n`;
+    uiStrings.hi.rewarded_ad_prompt_part2 = `क्या आप संकेत पाने के लिए विज्ञापन देखना चाहते हैं?`; uiStrings.en.rewarded_ad_prompt_part2 = `Would you like to watch an ad for a hint?`;
+    uiStrings.hi.rewarded_ad_watched_sim = `मान लीजिए आपने विज्ञापन देखा।`; uiStrings.en.rewarded_ad_watched_sim = `Imagine you watched the ad.`;
+
+
+    // --- User Data & Auth ---
+    let currentUser = { name: "अतिथि", email: "", initials: "👤", quizzesCompleted: 0, totalMcqScore: 0, mcqsAttempted: 0 };
+    function getInitials(name) { /* ... Same ... */ if (!name || name.trim() === "") return "👤"; const words = name.split(' '); return (words.length > 1 && words[1]) ? (words[0][0] + words[1][0]).toUpperCase() : name[0].toUpperCase(); }
+    function updateUserSession(name, email = "") { /* ... Same as before, uses saveUserSession & updateUIAfterLogin ... */
+        currentUser.name = name; currentUser.email = email; currentUser.initials = getInitials(name);
+        const storedProgress = JSON.parse(localStorage.getItem('userProgress'));
+        if (storedProgress && storedProgress.name === name) { currentUser.quizzesCompleted = storedProgress.quizzesCompleted || 0; currentUser.totalMcqScore = storedProgress.totalMcqScore || 0; currentUser.mcqsAttempted = storedProgress.mcqsAttempted || 0;
+        } else { currentUser.quizzesCompleted = 0; currentUser.totalMcqScore = 0; currentUser.mcqsAttempted = 0; }
+        saveUserSession(); updateUIAfterLogin();
+    }
+    function saveUserSession() { /* ... Same ... */ localStorage.setItem('userName', currentUser.name); localStorage.setItem('userEmail', currentUser.email); localStorage.setItem('userInitials', currentUser.initials); localStorage.setItem('userProgress', JSON.stringify({ name: currentUser.name, quizzesCompleted: currentUser.quizzesCompleted, totalMcqScore: currentUser.totalMcqScore, mcqsAttempted: currentUser.mcqsAttempted })); }
+    function updateUIAfterLogin() { /* ... Same as previous version, uses applyTranslations ... */
+        const greetingEl = document.getElementById('dashboard-greeting');
+        if (greetingEl) {
+           greetingEl.innerText = (uiStrings[currentLanguage]?.greeting_user || "Hello, {userName}!").replace("{userName}", currentUser.name);
         }
+        document.querySelectorAll('.profile-button').forEach(icon => icon.innerText = currentUser.initials);
+        const splashLogoEl = document.getElementById('splash-logo'); if(splashLogoEl) splashLogoEl.innerText = currentUser.initials;
+        const profileAvatarEl = document.getElementById('profile-avatar-initials'); if(profileAvatarEl) profileAvatarEl.innerText = currentUser.initials;
+        const profileNameEl = document.getElementById('profile-user-name'); if(profileNameEl) profileNameEl.innerText = currentUser.name;
+        const profileEmailEl = document.getElementById('profile-user-email'); if(profileEmailEl) profileEmailEl.innerText = currentUser.email || (uiStrings[currentLanguage]?.not_available || "N/A");
+        const profileQuizzesEl = document.getElementById('profile-quizzes-completed'); if(profileQuizzesEl) profileQuizzesEl.innerText = currentUser.quizzesCompleted;
+        const profileAvgScoreEl = document.getElementById('profile-avg-score');
+        if (profileAvgScoreEl){
+             const avgScore = currentUser.mcqsAttempted > 0 ? Math.round((currentUser.totalMcqScore / currentUser.mcqsAttempted) * 100) : 0;
+             profileAvgScoreEl.innerText = `${avgScore}%`;
+        }
+        applyTranslations(); // Crucial to update all keyed elements after dynamic content is set
     }
-    
-    // --- AdManager (Same as before) ---
-    const adManager = { /* ... same code as previous version ... */ };
-
-    // --- User Data (Same as before) ---
-    let currentUser = { /* ... same code ... */ };
-    function updateUserSession(name, email = "") { /* ... same ... */ }
-    function saveUserSession() { /* ... same ... */ }
-    function updateUIAfterLogin() { /* ... call applyTranslations() at the end ... */
-        // ... existing code ...
-        applyTranslations(); // Re-apply translations for dynamic elements like greeting
+    function loadUserSession() { /* ... Same as previous, loads progress ... */
+        const storedName = localStorage.getItem('userName');
+        if (storedName) {
+            const storedEmail = localStorage.getItem('userEmail'); const storedInitials = localStorage.getItem('userInitials');
+            currentUser.name = storedName; currentUser.email = storedEmail || ""; currentUser.initials = storedInitials || getInitials(storedName);
+            const storedProgress = JSON.parse(localStorage.getItem('userProgress'));
+            if (storedProgress && storedProgress.name === storedName) { currentUser.quizzesCompleted = storedProgress.quizzesCompleted || 0; currentUser.totalMcqScore = storedProgress.totalMcqScore || 0; currentUser.mcqsAttempted = storedProgress.mcqsAttempted || 0;
+            } else { currentUser.quizzesCompleted = 0; currentUser.totalMcqScore = 0; currentUser.mcqsAttempted = 0; }
+            updateUIAfterLogin(); // Ensure UI reflects loaded data immediately
+            return true;
+        } return false;
     }
-    function loadUserSession() { /* ... same ... */ }
-    function handleGoogleSignIn() { /* ... same ... */ }
-    function handleGuestLogin() { /* ... same ... */ }
-    function handleLogout() { /* ... same, maybe clear language pref too or reset to default screen sequence */ }
+    function handleGoogleSignIn() { const name = prompt((uiStrings[currentLanguage] && uiStrings[currentLanguage].google_prompt_name || "For Google Sign-In, please enter your name:"), (uiStrings[currentLanguage] && uiStrings[currentLanguage].student_placeholder || "Dear Student")); if (name && name.trim() !== "") { const email = name.trim().toLowerCase().replace(/\s+/g, '.') + "@example.com"; updateUserSession(name.trim(), email); navigateTo('home-dashboard'); } else { alert((uiStrings[currentLanguage] && uiStrings[currentLanguage].name_required_alert) || "Name is required."); } }
+    uiStrings.hi.google_prompt_name = "Google साइन-इन के लिए, कृपया अपना नाम दर्ज करें:"; uiStrings.en.google_prompt_name = "For Google Sign-In, please enter your name:";
+    uiStrings.hi.student_placeholder = "प्रिय छात्र"; uiStrings.en.student_placeholder = "Dear Student";
+    uiStrings.hi.name_required_alert = "नाम आवश्यक है।"; uiStrings.en.name_required_alert = "Name is required.";
+    function handleGuestLogin() { updateUserSession((uiStrings[currentLanguage] && uiStrings[currentLanguage].guest_name) || "Guest"); navigateTo('home-dashboard'); }
+    uiStrings.hi.guest_name = "अतिथि"; uiStrings.en.guest_name = "Guest";
+    function handleLogout() { /* ... Same ... */ localStorage.removeItem('userName'); localStorage.removeItem('userEmail'); localStorage.removeItem('userInitials'); localStorage.removeItem('userProgress'); currentUser = { name: (uiStrings[currentLanguage] && uiStrings[currentLanguage].guest_name) || "Guest", email: "", initials: "👤", quizzesCompleted: 0, totalMcqScore: 0, mcqsAttempted: 0 }; updateUIAfterLogin(); navigateTo('login-screen'); }
 
 
-    // --- NCERT Data (with basic translation structure for titles for demo) ---
-    const ncert_data = {
-        // HI (Original Data)
+    // --- NCERT Data ---
+    const ncert_data = { /* ... Same extensive ncert_data with 'hi' and 'en' keys from previous response ... */
         hi: {
-            science: { subjectNameKey:"science_subj_hi", subjectName: "विज्ञान", chapters: [
-                { id: "sci_ch1", titleKey: "sci_ch1_hi", title: "हमारे आस-पास के पदार्थ", notes: ["पदार्थ कणों से मिलकर बना होता है।", "पदार्थ की तीन अवस्थाएँ: ठोस, द्रव, गैस।", "गलनांक, क्वथनांक।", "वाष्पीकरण शीतलता प्रदान करता है।"], aiKeyPoints: ["पदार्थ छोटे कणों से बनता है।","कणों के बीच खाली स्थान होता है।","कण लगातार चलते रहते हैं।","तापमान बढ़ने पर कणों की गति तेज हो जाती है।"], mcqs: [ /* ... existing 7+ mcqs ... */ ]},
-                { id: "sci_ch2", titleKey: "sci_ch2_hi", title: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?", notes: ["मिश्रण और यौगिक।"], mcqs: [/* ... */] }
-            ]},
-            maths: { subjectNameKey:"maths_subj_hi", subjectName: "गणित", chapters: [/* ... */] },
-            social_science: { subjectNameKey:"sst_subj_hi", subjectName: "सामाजिक विज्ञान", chapters: [/* ... */] },
-            hindi: { subjectNameKey:"hindi_subj_hi", subjectName: "हिन्दी (क्षितिज)", chapters: [/* ... */] }
+            science: { subjectNameKey:"science_subj_hi", subjectName: "विज्ञान", chapters: [ { id: "sci_ch1", titleKey: "sci_ch1_hi", title: "हमारे आस-पास के पदार्थ", notes: ["पदार्थ कणों से मिलकर बना होता है।", "पदार्थ की तीन अवस्थाएँ: ठोस, द्रव, गैस।", "गलनांक, क्वथनांक।", "वाष्पीकरण शीतलता प्रदान करता है।"], aiKeyPoints: ["पदार्थ छोटे कणों से बनता है।","कणों के बीच खाली स्थान होता है।","कण लगातार चलते रहते हैं।","तापमान बढ़ने पर कणों की गति तेज हो जाती है।"], mcqs: [ { q: "पदार्थ की कितनी मुख्य अवस्थाएँ होती हैं?", o: ["एक", "दो", "तीन", "चार"], a: 2, expl: "पदार्थ की तीन मुख्य अवस्थाएँ ठोस, द्रव और गैस हैं。" }, { q: "किस अवस्था में कणों के बीच आकर्षण बल सबसे अधिक होता है?", o: ["ठोस", "द्रव", "गैस", "प्लाज्मा"], a: 0, expl: "ठोस अवस्था में कण निकटतम होते हैं और आकर्षण बल सबसे मजबूत होता है।" }, { q: "पानी का क्वथनांक (Boiling Point) सेल्सियस में कितना होता है?", o: ["0°C", "100°C", "37°C", "273°C"], a: 1, expl: "सामान्य दाब पर पानी 100°C पर उबलता है。" }, { q: "गैसों को द्रवित किया जा सकता है:", o: ["केवल दाब बढ़ाकर", "केवल ताप घटाकर", "दाब बढ़ाकर और ताप घटाकर", "इनमें से कोई नहीं"], a: 2, expl: "गैसों को दाब बढ़ाकर और ताप घटाकर द्रवित किया जा सकता है。" }, { q: "वाष्पीकरण से क्या होता है?", o: ["गर्मी", "ठंडक", "कोई परिवर्तन नहीं", "पहले गर्मी फिर ठंडक"], a: 1, expl: "वाष्पीकरण एक शीतलन प्रक्रिया है क्योंकि उच्च ऊर्जा वाले कण सतह छोड़ देते हैं。" }, { q: "पदार्थ के कण निरंतर ____ होते हैं।", o: ["स्थिर", "गतिशील", "उदासीन", "भारी"], a: 1, expl: "पदार्थ के कण निरंतर गतिशील रहते हैं, जिसे ब्राउनी गति भी कहते हैं।" }, { q: "बर्फ का गलनांक केल्विन में क्या है?", o: ["0 K", "100 K", "273 K", "373 K"], a: 2, expl: "बर्फ का गलनांक 0°C होता है, जो 273 K (लगभग) के बराबर है。" }, ]}, { id: "sci_ch2", titleKey: "sci_ch2_hi", title: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?", notes: ["मिश्रण और यौगिक।"], mcqs: [ { q: "निलंबन का एक उदाहरण है:", o: ["नमक का पानी", "दूध", "मिट्टी का पानी", "चीनी का घोल"], a: 2, expl: "मिट्टी का पानी निलंबन का उदाहरण है।" }, { q: "टिंडल प्रभाव किसमें देखा जाता है?", o: ["वास्तविक विलयन", "कोलाइडल विलयन", "निलंबन", "इन सभी में"], a: 1, expl: "टिंडल प्रभाव कोलाइडल कणों द्वारा प्रकाश के प्रकीर्णन के कारण होता है。" } ] } ]},
+            maths: { subjectNameKey:"maths_subj_hi", subjectName: "गणित", chapters: [{ id: "math_ch1", titleKey: "math_ch1_hi", title: "संख्या पद्धति", notes: ["परिमेय और अपरिमेय संख्याएँ।"], mcqs: [{ q: "√2 क्या है?", o: ["परिमेय", "अपरिमेय"], a: 1, expl: "√2 अपरिमेय है।" }] }, { id: "math_ch2", titleKey: "math_ch2_hi", title: "बहुपद", notes: ["बहुपदों के शून्यक।"], mcqs: [{ q: "p(x) = x + 5 का शून्यक?", o: ["5", "-5"], a: 1, expl: "x = -5" }] } ]},
+            social_science: { subjectNameKey:"sst_subj_hi", subjectName: "सामाजिक विज्ञान", chapters: [{ id: "sst_hist_ch1", titleKey: "sst_hist_ch1_hi", title: "फ्रांसीसी क्रांति", notes: ["क्रांति के कारण।"], mcqs: [{ q: "फ्रांसीसी क्रांति कब हुई?", o: ["1789", "1776"], a: 0, expl: "1789 में।" }] }, { id: "sst_geo_ch1", titleKey: "sst_geo_ch1_hi", title: "भारत - आकार और स्थिति", notes: ["भारत का स्थान।"], mcqs: [{ q: "भारत का मानक याम्योत्तर?", o: ["82°30' पूर्व", "68°7' पूर्व"], a: 0, expl: "82°30' पूर्व" }] } ]},
+            hindi: { subjectNameKey:"hindi_subj_hi", subjectName: "हिन्दी (क्षितिज)", chapters: [{ id: "hindi_ch1", titleKey: "hindi_ch1_hi", title: "दो बैलों की कथा", notes: ["हीरा और मोती।"], mcqs: [{ q: "'दो बैलों की कथा' के लेखक?", o: ["प्रेमचंद", "वर्मा"], a: 0, expl: "प्रेमचंद।" }] }, { id: "hindi_ch2", titleKey: "hindi_ch2_hi", title: "ल्हासा की ओर", notes: ["तिब्बत यात्रा।"], mcqs: [{ q: "'ल्हासा की ओर' क्या है?", o: ["कहानी", "यात्रा वृत्तांत"], a: 1, expl: "यात्रा वृत्तांत。"}] } ]}
         },
-        // EN (Translated Sample Titles & Notes)
         en: {
-            science: { subjectNameKey:"science_subj_en", subjectName: "Science", chapters: [
-                { id: "sci_ch1", titleKey: "sci_ch1_en", title: "Matter in Our Surroundings", notes: ["Matter is made up of particles.", "Three states of matter: Solid, Liquid, Gas.", "Melting point, boiling point.", "Evaporation causes cooling."], aiKeyPoints: ["Matter is composed of small particles.", "Particles have space between them.", "Particles are constantly moving.", "Kinetic energy of particles increases with temperature."], mcqs: [ /* MCQ content would also need translation */ 
-                    { q: "How many main states of matter are there?", o: ["One", "Two", "Three", "Four"], a: 2, expl: "The three main states of matter are solid, liquid, and gas." },
-                    { q: "In which state is the force of attraction between particles the strongest?", o: ["Solid", "Liquid", "Gas", "Plasma"], a: 0, expl: "In solids, particles are closest and attraction is strongest." },
-                    // ... translate other MCQs for sci_ch1 if you want more complete demo
-                ]},
-                { id: "sci_ch2", titleKey: "sci_ch2_en", title: "Is Matter Around Us Pure?", notes: ["Mixtures and Compounds."], mcqs: [/* ... */] }
-            ]},
-            maths: { subjectNameKey:"maths_subj_en", subjectName: "Mathematics", chapters: [/* ... */] },
-            social_science: { subjectNameKey:"sst_subj_en", subjectName: "Social Science", chapters: [/* ... */] },
-            hindi: { subjectNameKey:"hindi_subj_en", subjectName: "Hindi (Kshitij)", chapters: [/* ... */] } // This might be tricky as "Hindi" subject usually remains Hindi
+            science: { subjectNameKey:"science_subj_en", subjectName: "Science", chapters: [ { id: "sci_ch1", titleKey: "sci_ch1_en", title: "Matter in Our Surroundings", notes: ["Matter is made up of particles.", "Three states of matter: Solid, Liquid, Gas.", "Melting point, boiling point.", "Evaporation causes cooling."], aiKeyPoints: ["Matter is composed of small particles.", "Particles have space between them.", "Particles are constantly moving.", "Kinetic energy of particles increases with temperature."], mcqs: [ { q: "How many main states of matter are there?", o: ["One", "Two", "Three", "Four"], a: 2, expl: "The three main states of matter are solid, liquid, and gas." }, { q: "In which state is the force of attraction between particles the strongest?", o: ["Solid", "Liquid", "Gas", "Plasma"], a: 0, expl: "In solids, particles are closest and attraction is strongest." }, { q: "What is the boiling point of water in Celsius?", o: ["0°C", "100°C", "37°C", "273°C"], a: 1, expl: "Water boils at 100°C at normal pressure." }, { q: "Gases can be liquefied by:", o: ["Increasing pressure only", "Decreasing temperature only", "Increasing pressure and decreasing temperature", "None of these"], a: 2, expl: "Gases can be liquefied by increasing pressure and decreasing temperature." }, { q: "Evaporation causes:", o: ["Heating", "Cooling", "No change", "First heating then cooling"], a: 1, expl: "Evaporation is a cooling process as high energy particles leave the surface." }, { q: "Particles of matter are continuously ____.", o: ["static", "moving", "neutral", "heavy"], a: 1, expl: "Particles of matter are continuously moving, also known as Brownian motion." }, { q: "What is the melting point of ice in Kelvin?", o: ["0 K", "100 K", "273 K", "373 K"], a: 2, expl: "The melting point of ice is 0°C, which is approximately 273 K." }, ]}, { id: "sci_ch2", titleKey: "sci_ch2_en", title: "Is Matter Around Us Pure?", notes: ["Mixtures and Compounds."], mcqs: [ { q: "An example of suspension is:", o: ["Salt water", "Milk", "Muddy water", "Sugar solution"], a: 2, expl: "Muddy water is an example of suspension." }, { q: "Tyndall effect is observed in:", o: ["True solution", "Colloidal solution", "Suspension", "All of these"], a: 1, expl: "Tyndall effect is due to scattering of light by colloidal particles." } ] } ]},
+            maths: { subjectNameKey:"maths_subj_en", subjectName: "Mathematics", chapters: [{ id: "math_ch1", titleKey: "math_ch1_en", title: "Number Systems", notes: ["Rational and Irrational numbers."], mcqs: [{ q: "What type of number is √2?", o: ["Rational", "Irrational"], a: 1, expl: "√2 is irrational." }] }, { id: "math_ch2", titleKey: "math_ch2_en", title: "Polynomials", notes: ["Zeroes of polynomials."], mcqs: [{ q: "Zero of p(x) = x + 5 is?", o: ["5", "-5"], a: 1, expl: "x = -5" }] } ]},
+            social_science: { subjectNameKey:"sst_subj_en", subjectName: "Social Science", chapters: [{ id: "sst_hist_ch1", titleKey: "sst_hist_ch1_en", title: "The French Revolution", notes: ["Causes of revolution."], mcqs: [{ q: "When did the French Revolution start?", o: ["1789", "1776"], a: 0, expl: "In 1789." }] }, { id: "sst_geo_ch1", titleKey: "sst_geo_ch1_en", title: "India - Size and Location", notes: ["India's location in the world."], mcqs: [{ q: "What is India's standard meridian?", o: ["82°30' E", "68°7' E"], a: 0, expl: "82°30' E" }] } ]},
+            hindi: { subjectNameKey:"hindi_subj_en", subjectName: "Hindi (Kshitij)", chapters: [{ id: "hindi_ch1", titleKey: "hindi_ch1_en", title: "Do Bailon ki Katha", notes: ["Heera and Moti."], mcqs: [{ q: "Author of 'Do Bailon ki Katha'?", o: ["Premchand", "Verma"], a: 0, expl: "Premchand." }] }, { id: "hindi_ch2", titleKey: "hindi_ch2_en", title: "Lhasa ki Ore", notes: ["Tibet travelogue."], mcqs: [{ q: "What genre is 'Lhasa ki Ore'?", o: ["Story", "Travelogue"], a: 1, expl: "Travelogue."}] } ]}
         }
     };
-     // Update uiStrings with dynamic subject/chapter keys (Simplified for demo)
-    uiStrings.hi.subjects = {
-        science_subj_hi: "विज्ञान", maths_subj_hi: "गणित", sst_subj_hi: "सामाजिक विज्ञान", hindi_subj_hi: "हिन्दी"
-    };
-    uiStrings.en.subjects = {
-        science_subj_en: "Science", maths_subj_en: "Mathematics", sst_subj_en: "Social Science", hindi_subj_en: "Hindi"
-    };
-    uiStrings.hi.chapters = { sci_ch1_hi: "हमारे आस-पास के पदार्थ", sci_ch2_hi: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?" };
-    uiStrings.en.chapters = { sci_ch1_en: "Matter in Our Surroundings", sci_ch2_en: "Is Matter Around Us Pure?" };
 
+    // Variables for features
     let currentQuizData = { questions: [], userAnswers: [], currentChapterId: null };
-    let eli5ModeActive = false; // For AI Chat
-
-    // --- Match the Columns Game Logic ---
+    let eli5ModeActive = false;
     let matchGameData = {};
     let selectedMatchItem = { column: null, index: -1, element: null };
-    let matchGameAttempts = 0;
-
-    function setupMatchGame(gameId) {
-        // Example Data for "Matter in Our Surroundings"
+    // --- Match the Columns Game Logic ---
+    function setupMatchGame(gameId) { /* ... Same setupMatchGame ... */
+        const lang = currentLanguage;
         if (gameId === 'sci_ch1_match') {
             matchGameData = {
-                titleKey: "match_columns_game", // For dynamic title
-                columnA: [
-                    { id: 'a1', textKey: 'solid_state', text: "ठोस अवस्था", matchId: 'b1' },
-                    { id: 'a2', textKey: 'liquid_state', text: "द्रव अवस्था", matchId: 'b3' },
-                    { id: 'a3', textKey: 'gaseous_state', text: "गैसीय अवस्था", matchId: 'b2' },
-                    { id: 'a4', textKey: 'melting_point', text: "गलनांक", matchId: 'b4' }
-                ],
-                columnB: [
-                    { id: 'b1', textKey: 'fixed_shape_volume', text: "निश्चित आकार और आयतन" },
-                    { id: 'b2', textKey: 'no_fixed_shape_volume', text: "निश्चित आकार या आयतन नहीं" },
-                    { id: 'b3', textKey: 'fixed_volume_no_shape', text: "निश्चित आयतन, आकार नहीं" },
-                    { id: 'b4', textKey: 'solid_to_liquid_temp', text: "ठोस से द्रव में परिवर्तन का ताप" }
-                ]
+                titleKey: "match_columns_game",
+                columnA: [ { id: 'a1', textKey: 'solid_state', matchId: 'b1' }, { id: 'a2', textKey: 'liquid_state', matchId: 'b3' }, { id: 'a3', textKey: 'gaseous_state', matchId: 'b2' }, { id: 'a4', textKey: 'melting_point', matchId: 'b4' } ],
+                columnB: [ { id: 'b1', textKey: 'fixed_shape_volume' }, { id: 'b2', textKey: 'no_fixed_shape_volume' }, { id: 'b3', textKey: 'fixed_volume_no_shape' }, { id: 'b4', textKey: 'solid_to_liquid_temp' } ]
             };
-             // Translate game item texts
-            matchGameData.columnA.forEach(item => item.text = uiStrings[currentLanguage][item.textKey] || item.text);
-            matchGameData.columnB.forEach(item => item.text = uiStrings[currentLanguage][item.textKey] || item.text);
-        } else {
-            // Default or error
-            matchGameData = { columnA: [], columnB: [] };
-        }
-        document.getElementById('match-game-title').innerText = uiStrings[currentLanguage][matchGameData.titleKey] || "Match Game";
+            matchGameData.columnA.forEach(item => item.text = uiStrings[lang][item.textKey] || item.textKey); // Populate text using lang
+            matchGameData.columnB.forEach(item => item.text = uiStrings[lang][item.textKey] || item.textKey);
+        } else { matchGameData = { columnA: [], columnB: [] }; }
+        const gameTitleEl = document.getElementById('match-game-title');
+        if (gameTitleEl && uiStrings[lang][matchGameData.titleKey]) gameTitleEl.innerText = uiStrings[lang][matchGameData.titleKey];
         renderMatchColumns();
-        document.getElementById('match-game-submit').style.display = 'block';
-        document.getElementById('match-game-feedback').innerText = '';
-        matchGameAttempts = 0;
+        const submitBtn = document.getElementById('match-game-submit'); if(submitBtn) submitBtn.style.display = 'block';
+        const feedbackEl = document.getElementById('match-game-feedback'); if(feedbackEl) feedbackEl.innerText = '';
     }
-
-    function renderMatchColumns() {
+    function renderMatchColumns() { /* ... Same, uses matchGameData.columnA/B[i].text directly ... */
         const colA_div = document.getElementById('match-column-a');
         const colB_div = document.getElementById('match-column-b');
-        colA_div.innerHTML = `<h4 data-translate-key="column_a">${uiStrings[currentLanguage].column_a}</h4>`;
-        colB_div.innerHTML = `<h4 data-translate-key="column_b">${uiStrings[currentLanguage].column_b}</h4>`;
-
-        // Shuffle Column B for randomness
+        if(!colA_div || !colB_div) return; // Guard if elements not found
+        colA_div.innerHTML = `<h4 data-translate-key="column_a">${uiStrings[currentLanguage]?.column_a || 'Column A'}</h4>`;
+        colB_div.innerHTML = `<h4 data-translate-key="column_b">${uiStrings[currentLanguage]?.column_b || 'Column B'}</h4>`;
         const shuffledB = [...matchGameData.columnB].sort(() => Math.random() - 0.5);
-
-        matchGameData.columnA.forEach((item, index) => {
-            const itemEl = document.createElement('div');
-            itemEl.classList.add('match-item');
-            itemEl.dataset.id = item.id;
-            itemEl.dataset.matchId = item.matchId;
-            itemEl.dataset.columnIndex = 0; // Column A
-            itemEl.dataset.itemIndex = index;
-            itemEl.textContent = item.text;
-            itemEl.onclick = () => selectMatchGameItem(itemEl, 0, index);
-            colA_div.appendChild(itemEl);
-        });
-        shuffledB.forEach((item, index) => { // Use shuffled B
-            const itemEl = document.createElement('div');
-            itemEl.classList.add('match-item');
-            itemEl.dataset.id = item.id;
-            itemEl.dataset.columnIndex = 1; // Column B
-            itemEl.dataset.itemIndex = index; // Original index for comparison if needed, but id is better
-            itemEl.textContent = item.text;
-            itemEl.onclick = () => selectMatchGameItem(itemEl, 1, index);
-            colB_div.appendChild(itemEl);
-        });
+        matchGameData.columnA.forEach((item, index) => { const itemEl = document.createElement('div'); itemEl.classList.add('match-item'); itemEl.dataset.id = item.id; itemEl.dataset.matchId = item.matchId; itemEl.dataset.columnIndex = 0; itemEl.dataset.itemIndex = index; itemEl.textContent = item.text; itemEl.onclick = () => selectMatchGameItem(itemEl, 0, index); colA_div.appendChild(itemEl); });
+        shuffledB.forEach((item, index) => { const itemEl = document.createElement('div'); itemEl.classList.add('match-item'); itemEl.dataset.id = item.id; itemEl.dataset.columnIndex = 1; itemEl.dataset.itemIndex = matchGameData.columnB.findIndex(origB => origB.id === item.id); itemEl.textContent = item.text; itemEl.onclick = () => selectMatchGameItem(itemEl, 1, itemEl.dataset.itemIndex); colB_div.appendChild(itemEl); });
     }
-    function selectMatchGameItem(element, colIndex, itemIndex) {
+    function selectMatchGameItem(element, colIndex, itemIndexOriginal) { /* ... Same logic ... */
         if (element.classList.contains('matched-correct') || element.classList.contains('matched-incorrect')) return;
-
-        if (selectedMatchItem.element) { // If one item is already selected
-            if (selectedMatchItem.column !== colIndex) { // Ensure selection from different columns
-                // Store this pair for checking on submit, or check immediately
-                // For simplicity, we'll make a visual connection if we were doing drag-drop.
-                // For click-click, we temporarily highlight both.
-                // For this mockup, we'll just remember the user's attempted "pair"
+        if (selectedMatchItem.element) {
+            if (selectedMatchItem.column !== colIndex) { // Selected from other column
                 element.classList.add('selected');
-                // If implementing an immediate check, this is where it would go.
-                // For this submit-based version, we are storing the selected states visually.
-                // User needs to select one from A and one from B.
-                // This click logic is simpler: select an item. If two are selected, attempt to match.
-                 // However, for user selection for later submission, we need to ensure they pick one from each
-                 // Or, even simpler for mockup: user manually marks pairs, and "submit" checks them.
-                 // Let's use the 'selected' class to track user choice for each item in column A for pairing.
-                if (selectedMatchItem.element.dataset.columnIndex === "0") { // If previous was from col A
-                    // Store user's B choice against A choice's dataset
+                 // We visually link the A item with B's ID/text on the A item directly
+                if (selectedMatchItem.element.dataset.columnIndex === "0") { // If selectedMatchItem is Col A
                      selectedMatchItem.element.dataset.pairedWith = element.dataset.id;
-                     selectedMatchItem.element.textContent += ` \u2194 ${element.textContent.substring(0,15)}...`; // Visual link
-                } // else if previous was col B, then pair with this col A item if applicable.
-
-                // Clear selection after making a pair choice
-                setTimeout(() => {
-                    selectedMatchItem.element.classList.remove('selected');
+                     const originalTextA = matchGameData.columnA.find(it => it.id === selectedMatchItem.element.dataset.id)?.text || '';
+                     selectedMatchItem.element.innerHTML = `${originalTextA} <span style="color: ${selectedMatchItem.element.classList.contains('selected')? 'white': 'var(--pw-blue)'}; font-weight:normal;"> \u2194 ${element.textContent.substring(0,10)}...</span>`;
+                } else { // If selectedMatchItem is Col B, means current element is Col A
+                    element.dataset.pairedWith = selectedMatchItem.element.dataset.id;
+                    const originalTextA_current = matchGameData.columnA.find(it => it.id === element.dataset.id)?.text || '';
+                    element.innerHTML = `${originalTextA_current} <span style="color: ${element.classList.contains('selected')? 'white': 'var(--pw-blue)'}; font-weight:normal;"> \u2194 ${selectedMatchItem.element.textContent.substring(0,10)}...</span>`;
+                }
+                setTimeout(() => { // Clear selection highlight but keep the text linkage
+                    selectedMatchItem.element?.classList.remove('selected'); // Null check
                     element.classList.remove('selected');
                     selectedMatchItem = { column: null, index: -1, element: null };
                 }, 300);
-
-            } else { // Selected from same column again, so switch selection
-                selectedMatchItem.element.classList.remove('selected');
-                element.classList.add('selected');
-                selectedMatchItem = { column: colIndex, index: itemIndex, element: element };
+            } else { // Selected from same column again
+                selectedMatchItem.element.classList.remove('selected'); // Remove from old
+                element.classList.add('selected'); // Add to new
+                selectedMatchItem = { column: colIndex, index: itemIndexOriginal, element: element };
             }
         } else { // First item selected
             element.classList.add('selected');
-            selectedMatchItem = { column: colIndex, index: itemIndex, element: element };
+            selectedMatchItem = { column: colIndex, index: itemIndexOriginal, element: element };
         }
     }
-     function resetMatchGame() {
-        const colA_items = document.querySelectorAll('#match-column-a .match-item');
-        const colB_items = document.querySelectorAll('#match-column-b .match-item');
-        
-        colA_items.forEach(item => {
-            item.classList.remove('selected', 'matched-correct', 'matched-incorrect');
-            delete item.dataset.pairedWith; // Clear pairing
-            // Reset text to original (requires storing original text or re-rendering from gameData)
-            const originalItemData = matchGameData.columnA.find(d => d.id === item.dataset.id);
-            if (originalItemData) item.textContent = originalItemData.text;
-        });
-        colB_items.forEach(item => item.classList.remove('selected', 'matched-correct', 'matched-incorrect')); // Column B items generally don't store pair state in this model
-
-        selectedMatchItem = { column: null, index: -1, element: null };
-        document.getElementById('match-game-feedback').innerText = '';
-        document.getElementById('match-game-submit').style.display = 'block'; // Show submit button
-        matchGameAttempts = 0;
-        // Optional: Re-shuffle column B if desired by re-calling renderMatchColumns or parts of it.
-        // For simplicity now, just clears state. For full reset and shuffle, call setupMatchGame with game ID.
-        setupMatchGame(navigationParams.gameId || 'sci_ch1_match');
-    }
-
-    function submitMatchGame() {
+    function resetMatchGame() { /* ... Same, calls setupMatchGame ... */ setupMatchGame(navigationParams.gameId || 'sci_ch1_match');}
+    function submitMatchGame() { /* ... Same ... */
         let correctMatches = 0;
         const colA_items = document.querySelectorAll('#match-column-a .match-item');
         colA_items.forEach(itemA => {
-            const itemA_matchId = itemA.dataset.matchId; // What it *should* match in B
-            const userPairedB_Id = itemA.dataset.pairedWith; // What user paired it with from B
-
-            if (userPairedB_Id && userPairedB_Id === itemA_matchId) {
-                correctMatches++;
-                itemA.classList.add('matched-correct');
-                const itemB = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`);
-                if (itemB) itemB.classList.add('matched-correct');
-            } else if (userPairedB_Id) {
-                itemA.classList.add('matched-incorrect');
-                const itemB_user_choice = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`);
-                if(itemB_user_choice) itemB_user_choice.classList.add('matched-incorrect');
-                // Optionally highlight the correct B item
-                 const itemB_correct_match = document.querySelector(`#match-column-b .match-item[data-id='${itemA_matchId}']`);
-                 if(itemB_correct_match) itemB_correct_match.style.border = '2px solid orange'; // Highlight correct if user was wrong
-
-            } else {
-                // Item A was not paired by the user
-                itemA.classList.add('matched-incorrect'); // Mark as incorrect if not attempted
-            }
+            const itemA_matchId = itemA.dataset.matchId;
+            const userPairedB_Id = itemA.dataset.pairedWith;
+            if (userPairedB_Id && userPairedB_Id === itemA_matchId) { correctMatches++; itemA.classList.add('matched-correct'); const itemB = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`); if (itemB) itemB.classList.add('matched-correct');
+            } else if (userPairedB_Id) { itemA.classList.add('matched-incorrect'); const itemB_user_choice = document.querySelector(`#match-column-b .match-item[data-id='${userPairedB_Id}']`); if(itemB_user_choice) itemB_user_choice.classList.add('matched-incorrect'); const itemB_correct_match = document.querySelector(`#match-column-b .match-item[data-id='${itemA_matchId}']`); if(itemB_correct_match) itemB_correct_match.style.border = '2px solid orange';
+            } else { itemA.classList.add('matched-incorrect'); }
         });
         const feedbackDiv = document.getElementById('match-game-feedback');
-        feedbackDiv.textContent = `Your score: ${correctMatches} / ${matchGameData.columnA.length}`;
-        document.getElementById('match-game-submit').style.display = 'none'; // Hide after submission
+        if(feedbackDiv) feedbackDiv.textContent = `${uiStrings[currentLanguage]?.your_score || 'Your Score'}: ${correctMatches} / ${matchGameData.columnA.length}`;
+        const submitBtn = document.getElementById('match-game-submit'); if(submitBtn) submitBtn.style.display = 'none';
     }
+    uiStrings.hi.your_score = "आपका स्कोर"; uiStrings.en.your_score = "Your Score";
 
+    // --- Navigation & Content Population ---
+    // navigateTo function: Use the refined version from previous response.
+    // Key parts: handles splash timeout, updates translations on navigation.
+    function navigateTo(screenId, params = {}) {
+        console.log(`Navigating to: ${screenId}. Current: ${currentScreenId}`);
+        adManager.hideInterstitial();
 
-    // --- Navigation & Content (Key points button added to chapter detail, language handling) ---
-    let currentScreenId = 'language-selector-screen'; // Start with language selector
-    let previousScreenId = 'language-selector-screen'; let navigationParams = {};
-    function navigateTo(screenId, params = {}) { /* ... same with applyTranslations() at end, handle lang param ... */
-        const noBannerScreens = ['language-selector-screen', 'splash-screen', 'login-screen'];
-        adManager.showBanner(!noBannerScreens.includes(screenId));
+        const oldScreen = document.getElementById(currentScreenId);
+        if (oldScreen) { oldScreen.classList.remove('active'); console.log(`Deactivated: ${currentScreenId}`); }
+        else { console.warn(`Old screen element not found for ID: ${currentScreenId}`); }
 
-        const oldScreen = document.getElementById(currentScreenId); if (oldScreen) oldScreen.classList.remove('active');
         const newScreen = document.getElementById(screenId);
         if (newScreen) {
-            previousScreenId = currentScreenId; currentScreenId = screenId; navigationParams = params;
+            previousScreenId = currentScreenId; currentScreenId = screenId; navigationParams = params || {};
+            const noBannerScreens = ['language-selector-screen', 'splash-screen', 'login-screen'];
+            adManager.showBanner(!noBannerScreens.includes(screenId));
             newScreen.classList.remove('no-banner-adjustment');
             if (noBannerScreens.includes(screenId)) { newScreen.classList.add('no-banner-adjustment'); }
-            newScreen.classList.add('active'); window.scrollTo(0,0);
+            newScreen.classList.add('active'); console.log(`Activated: ${screenId}`); window.scrollTo(0,0);
 
-            // Populate screen-specific dynamic content
+            if (screenId === 'splash-screen') {
+                console.log("Splash screen active. Setting timeout.");
+                if (newScreen.splashTimeoutId) clearTimeout(newScreen.splashTimeoutId);
+                newScreen.splashTimeoutId = setTimeout(() => {
+                    console.log("Splash timeout ended.");
+                    if (loadUserSession()) { navigateTo('home-dashboard'); } else { navigateTo('login-screen'); }
+                }, 2000);
+            }
             if (screenId === 'subject-screen') initializeSubjectScreen();
-            if (screenId === 'game-match-screen' && params.gameId) setupMatchGame(params.gameId);
-            if (screenId === 'chapter-list-screen' && params.subjectKey) { populateChapterList(params.subjectKey, ncert_data[currentLanguage][params.subjectKey]?.subjectName || params.subjectKey, params.subjectNameKey); document.getElementById('chapter-detail-back-button').onclick = () => navigateTo('chapter-list-screen', { subjectKey: params.subjectKey, subjectNameKey: params.subjectNameKey }); }
-            if (screenId === 'chapter-detail-screen' && params.chapter) {
-                //const chapterTitle = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c=>c.id === params.chapter.id)?.title || params.chapter.title;
-                const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c=>c.id === params.chapter.id);
-                const chapterTitle = chapterData ? chapterData.title : params.chapter.title;
-                document.getElementById('chapter-detail-title').innerText = chapterTitle;
-                params.chapter = chapterData || params.chapter; // Use localized chapter if available
+            if (screenId === 'game-match-screen' && params && params.gameId) setupMatchGame(params.gameId);
+            if (screenId === 'chapter-list-screen' && params && params.subjectKey) {
+                const langData = ncert_data[currentLanguage] || ncert_data.hi;
+                const subjectData = langData[params.subjectKey];
+                populateChapterList(params.subjectKey, subjectData?.subjectName || params.subjectKey, params.subjectNameKey);
+                const backBtn = document.getElementById('chapter-detail-back-button'); if(backBtn) backBtn.onclick = () => navigateTo('chapter-list-screen', { subjectKey: params.subjectKey, subjectNameKey: params.subjectNameKey });
+            }
+            if (screenId === 'chapter-detail-screen' && params && params.chapter) {
+                const langData = ncert_data[currentLanguage] || ncert_data.hi;
+                const subjectKey = navigationParams.subjectKey; // Important: Use the subjectKey stored in navigationParams from previous screen
+                const chapterData = langData[subjectKey]?.chapters.find(c => c.id === params.chapter.id) || params.chapter;
+                const chapterTitle = chapterData.title;
+                const detailTitleEl = document.getElementById('chapter-detail-title'); if(detailTitleEl) detailTitleEl.innerText = chapterTitle;
+                params.chapter = chapterData; // Update params to use potentially localized data
                 document.getElementById('view-notes-button').onclick = () => showNotesModal(params.chapter);
                 document.getElementById('view-ai-keys-button').onclick = () => showAIKeyPointsModal(params.chapter);
                 document.getElementById('practice-mcqs-button').onclick = () => startMcqQuiz(params.chapter);
-                document.getElementById('ask-doubt-button').onclick = () => navigateTo('ai-chat-screen', { contextKey: params.chapter.titleKey, context: chapterTitle });
+                document.getElementById('ask-doubt-button').onclick = () => navigateTo('ai-chat-screen', { context: chapterTitle }); // Simplified context passing
             }
-            if (screenId === 'ai-chat-screen' && params.contextKey) {
-                 const inputField = document.getElementById('chat-input-field');
-                 const baseQuestion = currentLanguage === 'hi' ? `अध्याय "${params.context}" के बारे में मेरा एक प्रश्न है: ` : `I have a question about chapter "${params.context}": `;
-                 inputField.value = baseQuestion; inputField.focus();
+            if (screenId === 'ai-chat-screen' && params && params.context) {
+                const inputField = document.getElementById('chat-input-field');
+                const baseQuestion = currentLanguage === 'hi' ? `अध्याय "${params.context}" के बारे में मेरा एक प्रश्न है: ` : `I have a question about chapter "${params.context}": `;
+                if(inputField) inputField.value = baseQuestion; inputField?.focus();
             }
-            // ... (targetFeature logic) ...
-            updateUIAfterLogin(); // Includes applyTranslations
-        } else { console.error(`Screen with id "${screenId}" not found.`); }
+            if (params && params.targetFeature && screenId === 'subject-screen') { localStorage.setItem('targetFeatureAfterSubject', params.targetFeature); }
+            if (screenId !== 'chapter-list-screen') { localStorage.removeItem('targetFeatureAfterSubject'); }
+            updateUIAfterLogin(); // This calls applyTranslations
+        } else { console.error(`New screen element not found for ID: ${screenId}`); }
     }
-    // goBackToPreviousScreenOr remains the same
-    function initializeSubjectScreen() { /* ... Use currentLanguage for subject names ... */
+    function goBackToPreviousScreenOr(defaultScreenId) { /* Same */ if (previousScreenId && previousScreenId !== currentScreenId) { navigateTo(previousScreenId, navigationParams); } else { navigateTo(defaultScreenId); } }
+    function initializeSubjectScreen() { /* ... Use currentLanguage ... */
         const subjectListContent = document.getElementById('subject-list-content'); subjectListContent.innerHTML = '';
-        const subjects = ncert_data[currentLanguage] || ncert_data.hi; // Fallback to hi
+        const subjects = ncert_data[currentLanguage] || ncert_data.hi;
         Object.keys(subjects).forEach(subjectKey => {
-            const subject = subjects[subjectKey];
+            const subject = subjects[subjectKey]; if(!subject.subjectName) return; // Skip if malformed
             const iconMap = { science: '🔬', maths: '🧮', social_science: '🌍', hindi: '✍️' };
             const card = document.createElement('div'); card.classList.add('list-item-card');
             card.innerHTML = `<div class="icon">${iconMap[subjectKey] || '📚'}</div><div class="title">${subject.subjectName}</div><div class="arrow">→</div>`;
-            card.onclick = () => navigateTo('chapter-list-screen', { subjectKey: subjectKey, subjectName: subject.subjectName, subjectNameKey: subject.subjectNameKey }); // Pass key for better title update
+            card.onclick = () => navigateTo('chapter-list-screen', { subjectKey: subjectKey, subjectNameKey: subject.subjectNameKey });
             subjectListContent.appendChild(card);
         });
     }
-    function populateChapterList(subjectKey, subjectName, subjectNameKey) { /* ... Use currentLanguage for chapter titles ... */
+    function populateChapterList(subjectKey, subjectNameFromParam, subjectNameKeyParam) { /* ... Use currentLanguage ... */
         const chapterListContainer = document.getElementById('chapter-list-items');
         const chapterListTitle = document.getElementById('chapter-list-title');
+        if (!chapterListContainer || !chapterListTitle) return;
         chapterListContainer.innerHTML = '';
-        chapterListTitle.innerText = `${subjectName} - ${uiStrings[currentLanguage].chapters_title}`;
-        const subjectData = ncert_data[currentLanguage][subjectKey] || ncert_data.hi[subjectKey]; // Fallback
+        chapterListTitle.innerText = `${subjectNameFromParam} - ${(uiStrings[currentLanguage] && uiStrings[currentLanguage].chapters_title) || "Chapters"}`;
+        const subjectData = (ncert_data[currentLanguage] && ncert_data[currentLanguage][subjectKey]) || (ncert_data.hi && ncert_data.hi[subjectKey]);
         if (subjectData && subjectData.chapters) {
             subjectData.chapters.forEach(chapter => {
                 const card = document.createElement('div'); card.classList.add('list-item-card');
                 card.innerHTML = `<div class="icon">📖</div><div class="title">${chapter.title}</div><div class="arrow">→</div>`;
-                // ... (targetFeature logic remains) ...
-                card.onclick = () => navigateTo('chapter-detail-screen', { chapter: chapter, subjectKey: subjectKey, subjectNameKey:subjectNameKey, chapterTitleKey: chapter.titleKey });
+                const targetFeature = localStorage.getItem('targetFeatureAfterSubject');
+                if (targetFeature) { if (targetFeature === 'notes') card.onclick = () => showNotesModal(chapter); else if (targetFeature === 'mcq') card.onclick = () => startMcqQuiz(chapter); }
+                else { card.onclick = () => navigateTo('chapter-detail-screen', { chapter: chapter, subjectKey: subjectKey, subjectNameKey:subjectNameKeyParam, chapterTitleKey: chapter.titleKey }); }
                 chapterListContainer.appendChild(card);
             });
-        } // else ...
+        } else { chapterListContainer.innerHTML = `<p>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_chapters_available) || "No chapters available for this subject."}</p>`; }
     }
+     uiStrings.hi.no_chapters_available = "इस विषय के लिए अध्याय उपलब्ध नहीं हैं।"; uiStrings.en.no_chapters_available = "No chapters available for this subject.";
 
     // --- Modal (Notes, AI Keys, MCQ) Logic ---
-    const modal = document.getElementById('notes-mcq-modal'); /* ... same elements ... */
-    const modalExtraControls = document.getElementById('modal-extra-controls');
-    function showNotesModal(chapter) { /* ... Add Audio Button ... */
-        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage].notes_tile}`;
-        // ... (notes HTML generation) ...
+    const modal = document.getElementById('notes-mcq-modal'); const modalTitle = document.getElementById('modal-title'); const modalBody = document.getElementById('modal-body'); const modalExtraControls = document.getElementById('modal-extra-controls'); const mcqSubmitBtn = document.getElementById('mcq-submit-button'); const mcqFinalScoreDiv = document.getElementById('mcq-final-score');
+    function showNotesModal(chapter) { /* ... Add Audio Button, use currentLanguage ... */
+        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage]?.notes_tile || 'Notes'}`;
+        let notesHtml = '<ul>';
+        const chapterNotes = chapter.notes || []; // Use localized notes if available in `chapter` object from `navigateTo`
+        if (chapterNotes.length > 0) { chapterNotes.forEach(note => { notesHtml += `<li>${note}</li>`; }); }
+        else { notesHtml += `<li>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_notes_available) || "Notes not available for this chapter."}</li>`; }
+        notesHtml += '</ul>';
         modalBody.innerHTML = notesHtml;
-        modalExtraControls.innerHTML = `<button id="audio-notes-button" onclick="playAudioNotes('${chapter.notes ? chapter.notes.join('. ') : ''}')">${uiStrings[currentLanguage].audio_notes_btn}</button>`;
-        // ... (hide mcq buttons, show modal) ...
-    }
-    function playAudioNotes(textToSpeak) { // Basic TTS simulation
-        alert(uiStrings[currentLanguage].audio_playing_sim);
-        if ('speechSynthesis' in window && textToSpeak) {
-            const utterance = new SpeechSynthesisUtterance(textToSpeak.substring(0, 200)); // Speak first 200 chars
-            utterance.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US';
-            speechSynthesis.speak(utterance);
-        } else {
-            console.log("Speech synthesis not supported or no text.");
-        }
-    }
-    function showAIKeyPointsModal(chapter) {
-        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage].ai_keys_title_modal}`;
-        let pointsHtml = '<ul>';
-        const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c => c.id === chapter.id);
-        const keyPoints = chapterData?.aiKeyPoints || (currentLanguage === 'hi' ? ["इस अध्याय के लिए AI मुख्य बिंदु जल्द ही उपलब्ध होंगे।"] : ["AI Key points for this chapter will be available soon."]);
-        
-        keyPoints.forEach(point => { pointsHtml += `<li>${point}</li>`; });
-        pointsHtml += '</ul>';
-        modalBody.innerHTML = pointsHtml;
-        modalExtraControls.innerHTML = '';
-        mcqSubmitBtn.style.display = 'none'; mcqFinalScoreDiv.style.display = 'none';
+        modalExtraControls.innerHTML = `<button id="audio-notes-button" onclick="playAudioNotes('${chapterNotes.join('. ').replace(/'/g, "\\'")}')">${uiStrings[currentLanguage]?.audio_notes_btn || 'Listen'}</button>`;
+        if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display = 'none';
         modal.style.display = "flex";
     }
-    // startMcqQuiz, selectMcqOption, submitMcqQuiz, showHint remain similar but use currentLanguage for MCQs if translated
-    // In startMcqQuiz: currentQuizData.questions = chapter.mcqs ? chapter.mcqs[currentLanguage] || chapter.mcqs.hi || chapter.mcqs : [];
-    function startMcqQuiz(chapter) {
-        const chapterData = ncert_data[currentLanguage][navigationParams.subjectKey]?.chapters.find(c => c.id === chapter.id) || chapter;
+     uiStrings.hi.no_notes_available = "इस अध्याय के लिए नोट्स उपलब्ध नहीं हैं।"; uiStrings.en.no_notes_available = "Notes not available for this chapter.";
+    function playAudioNotes(textToSpeak) { /* ... Same ... */
+        alert(uiStrings[currentLanguage]?.audio_playing_sim || "Playing audio (simulation)...");
+        if ('speechSynthesis' in window && textToSpeak) { const utterance = new SpeechSynthesisUtterance(textToSpeak.substring(0, 200)); utterance.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US'; speechSynthesis.speak(utterance); }
+        else { console.log("Speech synthesis not supported or no text."); }
+    }
+    function showAIKeyPointsModal(chapter) { /* ... Use currentLanguage ... */
+        modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage]?.ai_keys_title_modal || "Key Points (AI)"}`;
+        let pointsHtml = '<ul>';
+        const chapterAIKeyPoints = chapter.aiKeyPoints || [];
+        if (chapterAIKeyPoints.length > 0) { chapterAIKeyPoints.forEach(point => { pointsHtml += `<li>${point}</li>`; }); }
+        else { pointsHtml += `<li>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_aikeys_available) || "AI key points not available."}</li>`; }
+        pointsHtml += '</ul>';
+        modalBody.innerHTML = pointsHtml; modalExtraControls.innerHTML = '';
+        if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display = 'none';
+        modal.style.display = "flex";
+    }
+     uiStrings.hi.no_aikeys_available = "इस अध्याय के लिए AI मुख्य बिंदु उपलब्ध नहीं हैं।"; uiStrings.en.no_aikeys_available = "AI Key points not available for this chapter.";
+    function startMcqQuiz(chapter) { /* ... Use currentLanguage for MCQs ... */
+        const chapterData = chapter; // chapter object should already be language specific from navigateTo
         currentQuizData.questions = chapterData.mcqs || [];
-        // ... rest of startMcqQuiz logic ...
-        // When displaying MCQ text or options, ensure you access them correctly based on your translated data structure.
-        // For this demo, the MCQs themselves in ncert_data were only partially translated.
+        currentQuizData.userAnswers = new Array(currentQuizData.questions.length).fill(null); currentQuizData.currentChapterId = chapterData.id;
+        modalTitle.innerText = `${chapterData.title} - MCQ ${(uiStrings[currentLanguage] && uiStrings[currentLanguage].practice_label) || "Practice"}`;
+        modalBody.innerHTML = ''; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display = 'none';
+        if (currentQuizData.questions.length === 0) { modalBody.innerHTML = `<p>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_mcqs_available) || "No MCQs available."}</p>`; if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none'; modal.style.display = "flex"; return; }
+        currentQuizData.questions.forEach((mcq, index) => { const itemDiv = document.createElement('div'); itemDiv.classList.add('mcq-item');
+            itemDiv.innerHTML = `<div class="mcq-question">${index + 1}. ${mcq.q} ${index < 3 ? `<button id="rewarded-ad-btn-${index}" class="rewarded-ad-button" onclick="adManager.promptRewardedAd(() => showHint(${index}))">${(uiStrings[currentLanguage] && uiStrings[currentLanguage].get_hint_btn) || "Get Hint"}</button>` : ''} </div> <div class="mcq-options" data-qindex="${index}"> ${mcq.o.map((option, oIndex) => `<div onclick="selectMcqOption(this, ${index}, ${oIndex})">${option}</div>`).join('')} </div> <div class="mcq-feedback" id="mcq-feedback-${index}"></div>`;
+            modalBody.appendChild(itemDiv); });
+        if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'block'; modal.style.display = "flex";
     }
-
-
-    // --- AI Chat with ELI5 (Updated) ---
-    function toggleEli5Mode(isEli5) {
-        eli5ModeActive = isEli5;
-        console.log("ELI5 Mode: " + (eli5ModeActive ? "ON" : "OFF"));
-        // Potentially change the placeholder or add a visual cue in chat
+    uiStrings.hi.practice_label = "अभ्यास"; uiStrings.en.practice_label = "Practice";
+    uiStrings.hi.no_mcqs_available = "इस अध्याय के लिए MCQ उपलब्ध नहीं हैं।"; uiStrings.en.no_mcqs_available = "No MCQs available for this chapter.";
+    uiStrings.hi.get_hint_btn = "संकेत पाएं"; uiStrings.en.get_hint_btn = "Get Hint";
+    function selectMcqOption(optionElement, questionIndex, optionIndex) { /* Same */ currentQuizData.userAnswers[questionIndex] = optionIndex; const optionsContainer = optionElement.parentElement; Array.from(optionsContainer.children).forEach(child => child.classList.remove('selected')); optionElement.classList.add('selected'); }
+    function showHint(questionIndex) { /* Same, but get explanation in current language */
+        const mcq = currentQuizData.questions[questionIndex];
+        if (mcq) { alert(`${(uiStrings[currentLanguage] && uiStrings[currentLanguage].hint_label) || "Hint"}: ${mcq.expl}`); const hintButton = document.getElementById(`rewarded-ad-btn-${questionIndex}`); if(hintButton) { hintButton.innerText = (uiStrings[currentLanguage] && uiStrings[currentLanguage].hint_received_btn) || "Hint Received"; hintButton.disabled = true; } }
     }
-    function sendChatMessage() { /* ... Same ad trigger ... */
-        // Modify AI "prompt" (simulation)
-        let simulatedPromptPrefix = eli5ModeActive ? (currentLanguage === 'hi' ? "मुझे यह बिलकुल आसान शब्दों में समझाओ जैसे मैं 5 साल का हूँ: " : "Explain this to me in very simple terms like I'm 5 years old: ") : (currentLanguage === 'hi' ? "कक्षा 9 के शिक्षक के रूप में, मैं आपको इस तरह समझाऊंगा: " : "As a Class 9 teacher, I'll explain it this way: ");
-        // ... rest of sendChatMessage, using simulatedPromptPrefix in the AI response ...
-         setTimeout(() => {
-            const aiResponseDiv = document.createElement('div');
-            aiResponseDiv.classList.add('message', 'ai-message');
+    uiStrings.hi.hint_label = "संकेत"; uiStrings.en.hint_label = "Hint";
+    uiStrings.hi.hint_received_btn = "संकेत प्राप्त"; uiStrings.en.hint_received_btn = "Hint Received";
+    function submitMcqQuiz() { /* ... Use currentLanguage for feedback text ... */
+        let score = 0;
+        currentQuizData.questions.forEach((mcq, index) => {
+            const feedbackDiv = document.getElementById(`mcq-feedback-${index}`); const optionsDivs = document.querySelector(`.mcq-options[data-qindex="${index}"]`).children;
+            Array.from(optionsDivs).forEach(optDiv => optDiv.onclick = null);
+            if (currentQuizData.userAnswers[index] === mcq.a) { score++; feedbackDiv.innerHTML = `<strong>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].correct_feedback) || "Correct!"}</strong> ${mcq.expl}`; feedbackDiv.className = 'mcq-feedback correct'; }
+            else { feedbackDiv.innerHTML = `<strong>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].incorrect_feedback) || "Incorrect."}</strong> ${(uiStrings[currentLanguage] && uiStrings[currentLanguage].correct_answer_is) || "Correct answer"}: ${mcq.o[mcq.a]}. <br/>${mcq.expl}`; feedbackDiv.className = 'mcq-feedback incorrect'; if (currentQuizData.userAnswers[index] !== null) { optionsDivs[currentQuizData.userAnswers[index]].style.borderColor = 'red'; }}
+            optionsDivs[mcq.a].style.backgroundColor = '#d4edda'; feedbackDiv.style.display = 'block'; });
+        if(mcqFinalScoreDiv) { mcqFinalScoreDiv.innerHTML = `${(uiStrings[currentLanguage] && uiStrings[currentLanguage].your_score) || "Your Score"}: ${score} / ${currentQuizData.questions.length}`; mcqFinalScoreDiv.style.display = 'block'; }
+        if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none';
+        currentUser.quizzesCompleted++; currentUser.totalMcqScore += score; currentUser.mcqsAttempted += currentQuizData.questions.length; saveUserSession(); updateUIAfterLogin();
+        adManager.triggerInterstitialIfNeeded('mcq');
+    }
+    uiStrings.hi.correct_feedback = "सही!"; uiStrings.en.correct_feedback = "Correct!";
+    uiStrings.hi.incorrect_feedback = "गलत।"; uiStrings.en.incorrect_feedback = "Incorrect.";
+    uiStrings.hi.correct_answer_is = "सही उत्तर"; uiStrings.en.correct_answer_is = "Correct answer";
+    function closeModal() { modal.style.display = "none"; modalBody.innerHTML = ""; if(mcqSubmitBtn) mcqSubmitBtn.style.display='none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display='none'; }
+    window.onclick = function(event) { if (event.target == modal) { closeModal(); } }
+
+    // --- AI Chat with ELI5 ---
+    function toggleEli5Mode(isEli5) { /* Same */ eli5ModeActive = isEli5; console.log("ELI5 Mode: " + (eli5ModeActive ? "ON" : "OFF")); }
+    function sendChatMessage() { /* ... Use currentLanguage ... */
+        const inputField = document.getElementById('chat-input-field'); const messageText = inputField.value.trim(); if (messageText === "") return; const chatMessagesContainer = document.getElementById('chat-messages-container'); const userMessageDiv = document.createElement('div'); userMessageDiv.classList.add('message', 'user-message'); userMessageDiv.textContent = messageText; chatMessagesContainer.appendChild(userMessageDiv); inputField.value = ""; adManager.triggerInterstitialIfNeeded('ai');
+        setTimeout(() => {
+            const aiResponseDiv = document.createElement('div'); aiResponseDiv.classList.add('message', 'ai-message');
+            let simulatedPromptPrefix = eli5ModeActive ? (currentLanguage === 'hi' ? "मुझे यह बिलकुल आसान शब्दों में समझाओ जैसे मैं 5 साल का हूँ: " : "Explain this to me in very simple terms like I'm 5 years old: ") : (currentLanguage === 'hi' ? "कक्षा 9 के शिक्षक के रूप में, मैं आपको इस तरह समझाऊंगा: " : "As a Class 9 teacher, I'll explain it this way: ");
             let aiResponse = simulatedPromptPrefix;
-            // ... (keyword based response remains same for demo) ...
-            aiResponseDiv.textContent = aiResponse;
-            // ...
-        }, 1000);
+            if (messageText.toLowerCase().includes("प्रकाश संश्लेषण") || messageText.toLowerCase().includes("photosynthesis")) { aiResponse += (currentLanguage === 'hi' ? "प्रकाश संश्लेषण वह प्रक्रिया है जिसके द्वारा हरे पौधे सूर्य के प्रकाश, पानी और कार्बन डाइऑक्साइड का उपयोग करके अपना भोजन बनाते हैं।" : "Photosynthesis is the process by which green plants use sunlight, water, and carbon dioxide to create their own food."); }
+            else { aiResponse += (currentLanguage === 'hi' ? "यह एक दिलचस्प प्रश्न है! मैं अभी इस विशिष्ट विषय पर विस्तृत जानकारी नहीं दे सकता।" : "That's an interesting question! I may not have detailed info on that specific topic right now."); }
+            aiResponseDiv.textContent = aiResponse; chatMessagesContainer.appendChild(aiResponseDiv); chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }, 1000); chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
     }
     
-    // --- Calculator Logic (Same) ---
-    // --- Initialization (Updated for language) ---
+    // --- Calculator Logic ---
+    let calcDisplay; // Declared here, will be assigned in DOMContentLoaded
+    let currentInput = '0'; let previousInput = ''; let operator = null;
+    function clearDisplay() { currentInput = '0'; previousInput = ''; operator = null; updateDisplay(); }
+    function deleteLast() { currentInput = currentInput.slice(0, -1); if (currentInput === '') currentInput = '0'; updateDisplay(); }
+    function appendNumber(num) { if (currentInput === '0' && num !== '.') currentInput = ''; currentInput += num; updateDisplay(); }
+    function appendOperator(op) { if (currentInput === '' && previousInput === '') return; if (operator && currentInput !== '' && currentInput !== 'Error') calculateResult(); if (currentInput === 'Error') currentInput = '0'; operator = op; previousInput = currentInput; currentInput = ''; }
+    function calculateResult() { if (!operator || previousInput === '' || currentInput === '' || currentInput === 'Error' || previousInput === 'Error') return; let result; const prev = parseFloat(previousInput); const curr = parseFloat(currentInput); switch (operator) { case '+': result = prev + curr; break; case '-': result = prev - curr; break; case '*': result = prev * curr; break; case '/': result = curr === 0 ? 'Error' : prev / curr; break; case '%': result = prev % curr; break; default: return; } currentInput = isNaN(result) || result === Infinity || result === -Infinity ? 'Error' : result.toString(); operator = null; previousInput = ''; updateDisplay(); }
+    function updateDisplay() { if(calcDisplay) { calcDisplay.textContent = currentInput.length > 12 ? parseFloat(currentInput).toExponential(5) : currentInput; } }
+
+    // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM Content Loaded. Fixing initial language setup.");
         const savedLang = localStorage.getItem('appLanguage');
-        if (savedLang) {
-            currentLanguage = savedLang;
-            document.documentElement.lang = savedLang;
-        } // Else, default 'hi' is used
-        // Don't apply translations yet, let language selector screen handle first setLanguage call or direct to splash
+        if (savedLang && uiStrings[savedLang]) { currentLanguage = savedLang; }
+        else { currentLanguage = 'hi'; } // Default if nothing saved or invalid
+        document.documentElement.lang = currentLanguage;
+        
+        // The language selector is "active" by default in HTML for the first load without saved lang.
+        // This call will translate it immediately.
+        applyTranslations();
+
+        calcDisplay = document.getElementById('calc-display'); // Assign calcDisplay
+        if(calcDisplay) updateDisplay(); // Initialize calculator display
 
         adManager.init();
-        // Initial screen is now language selector. It will call navigateTo after selection.
-        // No automatic navigation here until language is set.
-        // But if lang is already set, skip language selector.
-        if (savedLang) {
-            navigateTo('splash-screen'); // or home-dashboard directly if already logged in
+
+        if (savedLang) { // If lang was saved, skip language selector screen.
+            console.log("Saved language found:", savedLang, ". Navigating to splash screen.");
+            document.getElementById('language-selector-screen').classList.remove('active'); // Ensure it's not active
+            navigateTo('splash-screen'); // Splash will handle login/dashboard
         } else {
-            // Make language selector active. It's already 'active' in HTML to simplify.
-            // Call applyTranslations here for the lang selector screen itself to use its own keys if any part needs it.
-             applyTranslations(); // For the language selector page if it uses translate keys for its static text.
+            // No saved language. Language selector is already active from HTML.
+            // Ensure other screens are not active.
+             document.querySelectorAll('.screen:not(#language-selector-screen)').forEach(s => s.classList.remove('active'));
+            currentScreenId = 'language-selector-screen'; // Explicitly set for safety
+            console.log("No saved language. Language selector screen active.");
+            adManager.showBanner(false);
         }
-
-
-        const motivationQuotes = {
-            hi: ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।"],
-            en: ["Hard work always pays off.", "Education is the most powerful weapon."]
-        };
-        document.getElementById('daily-motivation-quote').innerText = motivationQuotes[currentLanguage][Math.floor(Math.random() * motivationQuotes[currentLanguage].length)];
-        //initializeSubjectScreen(); // Now called from navigateTo
-        //updateDisplay(); // Calc display init (if calc screen is ever default, or on its navigateTo)
+        // This will be re-applied correctly after language is set and user info loaded
+        const motQuotes = uiStrings[currentLanguage]?.motivation_quotes_list || uiStrings.hi.motivation_quotes_list;
+        const motQuoteEl = document.getElementById('daily-motivation-quote');
+        if (motQuoteEl && motQuotes && motQuotes.length > 0) {
+            motQuoteEl.innerText = motQuotes[Math.floor(Math.random() * motQuotes.length)];
+        }
     });
+    // Adding motivation quotes to uiStrings for easier translation/management
+    uiStrings.hi.motivation_quotes_list = ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।", "आज की मेहनत कल की सफलता है।", "ज्ञान में किया गया निवेश सर्वोत्तम भुगतान करता है।"];
+    uiStrings.en.motivation_quotes_list = ["Hard work always pays off.", "Education is the most powerful weapon.", "Today's effort is tomorrow's success.", "An investment in knowledge pays the best interest."];
 
 </script>
 </body>
