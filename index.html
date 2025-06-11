@@ -39,7 +39,7 @@
         .simulated-interstitial-overlay .ad-content { background-color: #333; padding:30px; border-radius:10px; max-width:80%;}
         .simulated-interstitial-overlay strong {display:block; font-size:1.5em; margin-bottom:10px; color: var(--pw-pink-accent);}
         .simulated-interstitial-overlay .close-ad-button { background-color: var(--pw-pink-accent); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; margin-top:15px; font-weight:bold; }
-        .timed-ad-notification { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background-color: var(--pw-blue); color:white; padding: 8px 15px; border-radius: 5px; font-size: 0.8em; z-index:1500; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display:none; font-family: var(--font-primary); }
+        /* Removed .timed-ad-notification styles as it's not the primary mechanism anymore */
 
         #splash-screen { justify-content: center; align-items: center; background: linear-gradient(135deg, var(--pw-purple), #8E44AD); color: var(--pw-text-light); text-align: center; }
         #splash-screen .logo-placeholder { width: 110px; height: 110px; margin-bottom: 20px; border-radius: 20px; background-color: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 2.2em; color: var(--pw-purple); box-shadow: 0 0 15px rgba(0,0,0,0.2); }
@@ -105,6 +105,7 @@
         .chat-messages .message { max-width: 75%; padding: 10px 14px; border-radius: var(--border-radius-main); margin-bottom: 10px; font-size: 0.95em; line-height: 1.45; word-wrap: break-word; }
         .chat-messages .user-message { background-color: var(--pw-purple); color: white; align-self: flex-end; margin-left: auto; border-bottom-right-radius: var(--border-radius-small);}
         .chat-messages .ai-message { background-color: var(--pw-bg-light); color: var(--pw-text-dark); align-self: flex-start; margin-right: auto; box-shadow: 0 1px 2px rgba(0,0,0,0.1); border-bottom-left-radius: var(--border-radius-small);}
+        .chat-messages .ai-message.thinking { font-style: italic; color: #555; }
         #ai-chat-screen .chat-input { display: flex; padding: 12px; border-top: 1px solid #ddd; background-color: #f5f5f5; flex-shrink: 0;}
         #ai-chat-screen .chat-input input { flex-grow: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; margin-right: 10px; font-family: 'Noto Sans Devanagari', sans-serif; } /* Keep Noto for Hindi input */
         #ai-chat-screen .chat-input button { padding: 12px 18px; border-radius: 25px; background: var(--pw-purple); color: white; border: none; cursor: pointer; font-weight: bold; }
@@ -155,7 +156,7 @@
                 <button class="close-ad-button" onclick="adManager.hideInterstitial()" data-translate-key="close_ad_btn">Close Ad</button>
             </div>
         </div>
-        <div id="timed-ad-notification" class="timed-ad-notification" data-translate-key="timed_ad_notif">Simulated Timed Interstitial Ad!</div>
+        <!-- Removed timed-ad-notification element, interstitial will be shown directly -->
 
         <!-- Screen 0: Language Selector -->
         <div id="language-selector-screen" class="screen active no-banner-adjustment"> <!-- Set active here in HTML as JS default might conflict -->
@@ -327,8 +328,18 @@
     let navigationParams = {};
     let currentLanguage = 'hi'; // Default
 
+    // --- Google Generative AI API Configuration ---
+    // !!! IMPORTANT SECURITY WARNING !!!
+    // Pasting API keys directly into client-side JavaScript is highly insecure.
+    // This key can be easily stolen and misused. For a production application,
+    // API calls should be proxied through a backend server where the key is stored securely.
+    // This is included for prototype/demonstration purposes ONLY as per your request.
+    const GEMINI_API_KEY = 'AIzaSyA8Tr6yaxoNv3plKCtSPneL6zBxug_JOj4'; // YOUR API KEY HERE
+    const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
+
+
     // --- Internationalization (i18n) ---
-    const uiStrings = { /* ... Same extensive uiStrings object from previous response ... */
+    const uiStrings = { /* ... Same extensive uiStrings object ... */
         hi: {
             app_title_full: "कक्षा 9 हिंदी AI गुरु",
             welcome_language: "भाषा चुनें",
@@ -341,7 +352,7 @@
             guest_continue_btn: "अतिथि के रूप में जारी रखें",
             greeting_user: "नमस्ते, {userName}!",
             subjects_tile: "विषय", ai_doubt_solver_tile: "AI शंका समाधान", practice_mcq_tile: "अभ्यास MCQ", notes_tile: "नोट्स", calculator_tile: "कैलकुलेटर", search_tile: "खोजें", games_tile: "शैक्षिक खेल", srs_flashcards_tile: "रिवीजन फ़्लैशकार्ड (SRS)", motivation_tile: "आज की प्रेरणा", motivation_quote_default: "मेहनत का फल हमेशा मीठा होता है।",
-            sim_banner_ad: "नकली बैनर विज्ञापन", sim_interstitial_ad: "नकली इंटरस्टीशियल विज्ञापन", interstitial_placeholder_text: "यह एक फ़ुल-स्क्रीन विज्ञापन के लिए प्लेसहोल्डर है।", close_ad_btn: "विज्ञापन बंद करें", timed_ad_notif: "नकली समयबद्ध इंटरस्टीशियल विज्ञापन!",
+            sim_banner_ad: "नकली बैनर विज्ञापन", sim_interstitial_ad: "नकली इंटरस्टीशियल विज्ञापन", interstitial_placeholder_text: "यह एक फ़ुल-स्क्रीन विज्ञापन के लिए प्लेसहोल्डर है।", close_ad_btn: "विज्ञापन बंद करें", // timed_ad_notif key removed
             select_game_title: "खेल चुनें", match_columns_game: "मिलान करो: पदार्थ की अवस्थाएँ", puzzle_game_placeholder: "शब्द पहेली (जल्द आ रहा है)", quiz_challenge_placeholder: "क्विज़ चुनौती (जल्द आ रहा है)",
             srs_info_title: "रिवीजन फ़्लैशकार्ड (SRS)", srs_coming_soon_title: "यह सुविधा जल्द आ रही है!", srs_coming_soon_desc: "Spaced Repetition System (SRS) आपको महत्वपूर्ण तथ्यों और अवधारणाओं को लंबे समय तक याद रखने में मदद करेगा।",
             match_columns_game_title: "मिलान करो", match_instructions: "कॉलम A के आइटम को कॉलम B के सही आइटम से मिलाएं।", column_a: "कॉलम A", column_b: "कॉलम B", submit_btn: "सबमिट करें", reset_btn: "पुनः आरंभ करें",
@@ -355,14 +366,18 @@
             // Game specific translations for sci_ch1_match
             solid_state: "ठोस अवस्था", liquid_state: "द्रव अवस्था", gaseous_state: "गैसीय अवस्था", melting_point: "गलनांक",
             fixed_shape_volume: "निश्चित आकार और आयतन", no_fixed_shape_volume: "निश्चित आकार या आयतन नहीं", fixed_volume_no_shape: "निश्चित आयतन, आकार नहीं", solid_to_liquid_temp: "ठोस से द्रव में परिवर्तन का ताप",
-             subjects: { science_subj_hi: "विज्ञान", maths_subj_hi: "गणित", sst_subj_hi: "सामाजिक विज्ञान", hindi_subj_hi: "हिन्दी" },
-            chapters: { sci_ch1_hi: "हमारे आस-पास के पदार्थ", sci_ch2_hi: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?" }
+            subjects: { science_subj_hi: "विज्ञान", maths_subj_hi: "गणित", sst_subj_hi: "सामाजिक विज्ञान", hindi_subj_hi: "हिन्दी" },
+            chapters: { sci_ch1_hi: "हमारे आस-पास के पदार्थ", sci_ch2_hi: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?" },
+            ai_thinking: "AI गुरु सोच रहा है...", ai_error: "क्षमा करें, AI गुरु अभी जवाब नहीं दे पा रहा है। कृपया बाद में प्रयास करें।",
+            after_2_ai_queries: "2 AI प्रश्नों के बाद", after_1_mcq: "1 MCQ क्विज़ के बाद", rewarded_ad_prompt_part1: "नकली पुरस्कृत विज्ञापन (ID: ...):\n\n", rewarded_ad_prompt_part2: "क्या आप संकेत पाने के लिए विज्ञापन देखना चाहते हैं?", rewarded_ad_watched_sim: "मान लीजिए आपने विज्ञापन देखा।",
+            motivation_quotes_list: ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।", "आज की मेहनत कल की सफलता है।", "ज्ञान में किया गया निवेश सर्वोत्तम भुगतान करता है।"]
+
         },
         en: {
             app_title_full: "Class 9 AI Guru (Website)",
             welcome_language: "Select Language", choose_preferred_language: "Please choose your preferred language.", app_name_splash: "Class 9 AI Guru", app_tagline_splash: "Your Personal AI Guru", welcome_login: "Welcome!", login_prompt: "Start your learning journey.", google_signin_btn: "Sign in with Google", guest_continue_btn: "Continue as Guest", greeting_user: "Hello, {userName}!",
             subjects_tile: "Subjects", ai_doubt_solver_tile: "AI Doubt Solver", practice_mcq_tile: "Practice MCQs", notes_tile: "Notes", calculator_tile: "Calculator", search_tile: "Search", games_tile: "Educational Games", srs_flashcards_tile: "Revision Flashcards (SRS)", motivation_tile: "Motivation of the Day", motivation_quote_default: "Hard work always pays off.",
-            sim_banner_ad: "Simulated Banner Ad", sim_interstitial_ad: "Simulated Interstitial Ad", interstitial_placeholder_text: "This is a placeholder for a full-screen ad.", close_ad_btn: "Close Ad", timed_ad_notif: "Simulated Timed Interstitial Ad!",
+            sim_banner_ad: "Simulated Banner Ad", sim_interstitial_ad: "Simulated Interstitial Ad", interstitial_placeholder_text: "This is a placeholder for a full-screen ad.", close_ad_btn: "Close Ad", // timed_ad_notif key removed
             select_game_title: "Select Game", match_columns_game: "Match: States of Matter", puzzle_game_placeholder: "Word Puzzle (Coming Soon)", quiz_challenge_placeholder: "Quiz Challenge (Coming Soon)",
             srs_info_title: "Revision Flashcards (SRS)", srs_coming_soon_title: "This Feature is Coming Soon!", srs_coming_soon_desc: "The Spaced Repetition System (SRS) will help you remember important facts and concepts for longer.",
             match_columns_game_title: "Match the Columns", match_instructions: "Match items from Column A with the correct items in Column B.", column_a: "Column A", column_b: "Column B", submit_btn: "Submit", reset_btn: "Reset",
@@ -377,7 +392,10 @@
             solid_state: "Solid State", liquid_state: "Liquid State", gaseous_state: "Gaseous State", melting_point: "Melting Point",
             fixed_shape_volume: "Fixed shape and volume", no_fixed_shape_volume: "No fixed shape or volume", fixed_volume_no_shape: "Fixed volume, no fixed shape", solid_to_liquid_temp: "Temp. of solid to liquid change",
             subjects: { science_subj_en: "Science", maths_subj_en: "Mathematics", sst_subj_en: "Social Science", hindi_subj_en: "Hindi" },
-            chapters: { sci_ch1_en: "Matter in Our Surroundings", sci_ch2_en: "Is Matter Around Us Pure?" }
+            chapters: { sci_ch1_en: "Matter in Our Surroundings", sci_ch2_en: "Is Matter Around Us Pure?" },
+            ai_thinking: "AI Guru is thinking...", ai_error: "Sorry, AI Guru is unable to respond right now. Please try again later.",
+            after_2_ai_queries: "After 2 AI Queries", after_1_mcq: "After 1 MCQ Quiz", rewarded_ad_prompt_part1: "Simulated Rewarded Ad (ID: ...):\n\n", rewarded_ad_prompt_part2: "Would you like to watch an ad for a hint?", rewarded_ad_watched_sim: "Imagine you watched the ad.",
+            motivation_quotes_list: ["Hard work always pays off.", "Education is the most powerful weapon.", "Today's effort is tomorrow's success.", "An investment in knowledge pays the best interest."]
         }
     };
     function applyTranslations() {
@@ -390,7 +408,10 @@
             else {
                 let iconHTML = ''; const iconElement = element.querySelector('.icon');
                 if (iconElement) { iconHTML = iconElement.outerHTML; }
-                element.innerHTML = iconHTML + translation;
+                const currentText = element.innerHTML.replace(/<span class="icon">.*?<\/span>/, '').trim(); // Get text content without icon
+                if (translation.trim() !== currentText) { // Only update if translation differs from current non-icon text
+                   element.innerHTML = iconHTML + translation;
+                }
             }
         });
         const currentScreenElement = document.getElementById(currentScreenId);
@@ -417,12 +438,10 @@
         }
         if (currentScreenId === 'game-match-screen' && matchGameData.titleKey && uiStrings[langToUse] && uiStrings[langToUse][matchGameData.titleKey]) {
             document.getElementById('match-game-title').innerText = uiStrings[langToUse][matchGameData.titleKey];
-            // Potentially re-render game items if their text needs update
             const instructionsEl = document.getElementById('match-game-instructions');
             if(instructionsEl && uiStrings[langToUse][instructionsEl.dataset.translateKey]){
                 instructionsEl.innerText = uiStrings[langToUse][instructionsEl.dataset.translateKey];
             }
-            // Re-render column headers
              document.querySelector('#match-column-a h4').innerText = uiStrings[langToUse]['column_a'];
              document.querySelector('#match-column-b h4').innerText = uiStrings[langToUse]['column_b'];
         }
@@ -433,9 +452,13 @@
         localStorage.setItem('appLanguage', lang);
         document.documentElement.lang = lang;
         applyTranslations();
-        const motivationQuotes = { hi: ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।", "आज की मेहनत कल की सफलता है।"], en: ["Hard work always pays off.", "Education is the most powerful weapon.", "Today's effort is tomorrow's success."] };
+        
+        const motQuotes = uiStrings[currentLanguage]?.motivation_quotes_list || uiStrings.hi.motivation_quotes_list;
         const motQuoteEl = document.getElementById('daily-motivation-quote');
-        if (motQuoteEl && motivationQuotes[currentLanguage]) { motQuoteEl.innerText = motivationQuotes[currentLanguage][Math.floor(Math.random() * motivationQuotes[currentLanguage].length)]; }
+        if (motQuoteEl && motQuotes && motQuotes.length > 0) {
+            motQuoteEl.innerText = motQuotes[Math.floor(Math.random() * motQuotes.length)];
+        }
+
         if (document.getElementById('language-selector-screen').classList.contains('active')) {
             console.log("Navigating from language selector to splash screen.");
             navigateTo('splash-screen');
@@ -443,35 +466,83 @@
     }
 
     // --- AdManager Simulation ---
-    const adManager = { /* ... Same extensive AdManager object from previous version ... */
-        ids: { banner: "ca-app-pub-2059477692919063/2354752864", interstitial: "ca-app-pub-2059477692919063/3733646664", rewarded: "ca-app-pub-2059477692919063/8833095951" },
-        aiQueryCount: 0, mcqQuizCount: 0, timedAdInterval: null,
-        init: function() { document.getElementById('banner-ad-id-display').innerText = `ID: ${this.ids.banner}`; this.timedAdInterval = setInterval(() => { console.log("Simulated 2-min timer: Time to show an interstitial (if appropriate)."); const timedAdNotification = document.getElementById('timed-ad-notification'); if (timedAdNotification) { timedAdNotification.style.display = 'block'; setTimeout(() => { timedAdNotification.style.display = 'none';}, 3000); } }, 30000); /* DEMO: 30s */ },
-        showBanner: function(show = true) { const bannerEl = document.getElementById('simulated-banner-ad'); if (bannerEl) bannerEl.style.display = show ? 'flex' : 'none'; },
-        showInterstitial: function(reason = "Triggered Ad") { console.log(`Simulating Interstitial Ad. Reason: ${reason}. ID: ${this.ids.interstitial}`); const interstitialIdEl = document.getElementById('interstitial-ad-id-display'); if (interstitialIdEl) interstitialIdEl.innerText = `ID: ${this.ids.interstitial}\nReason: ${reason}`; const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay'); if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'flex'; },
-        hideInterstitial: function() { const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay'); if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'none'; },
-        triggerInterstitialIfNeeded: function(type) { if (type === 'ai') { this.aiQueryCount++; if (this.aiQueryCount >= 2) { this.showInterstitial( (uiStrings[currentLanguage] && uiStrings[currentLanguage].after_2_ai_queries) || "After 2 AI Queries"); this.aiQueryCount = 0; } } else if (type === 'mcq') { this.showInterstitial((uiStrings[currentLanguage] && uiStrings[currentLanguage].after_1_mcq) || "After 1 MCQ Quiz"); } },
-        promptRewardedAd: function(rewardCallback) { const proceed = confirm((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_prompt_part1 || `Simulated Rewarded Ad (ID: ${this.ids.rewarded}):\n\n`) + ((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_prompt_part2) || `Would you like to watch an ad for a hint?`)); if (proceed) { alert((uiStrings[currentLanguage] && uiStrings[currentLanguage].rewarded_ad_watched_sim) || "Imagine you watched the ad."); if (rewardCallback) rewardCallback(); } },
-    };
-    uiStrings.hi.after_2_ai_queries = "2 AI प्रश्नों के बाद"; uiStrings.en.after_2_ai_queries = "After 2 AI Queries";
-    uiStrings.hi.after_1_mcq = "1 MCQ क्विज़ के बाद"; uiStrings.en.after_1_mcq = "After 1 MCQ Quiz";
-    uiStrings.hi.rewarded_ad_prompt_part1 = `नकली पुरस्कृत विज्ञापन (ID: ${adManager.ids.rewarded}):\n\n`; uiStrings.en.rewarded_ad_prompt_part1 = `Simulated Rewarded Ad (ID: ${adManager.ids.rewarded}):\n\n`;
-    uiStrings.hi.rewarded_ad_prompt_part2 = `क्या आप संकेत पाने के लिए विज्ञापन देखना चाहते हैं?`; uiStrings.en.rewarded_ad_prompt_part2 = `Would you like to watch an ad for a hint?`;
-    uiStrings.hi.rewarded_ad_watched_sim = `मान लीजिए आपने विज्ञापन देखा।`; uiStrings.en.rewarded_ad_watched_sim = `Imagine you watched the ad.`;
+    const adManager = {
+        ids: { banner: "ca-app-pub-XXXX/BANNER", interstitial: "ca-app-pub-YYYY/INTERSTITIAL", rewarded: "ca-app-pub-ZZZZ/REWARDED" },
+        aiQueryCount: 0,
+        mcqQuizCount: 0,
+        timedAdInterval: null,
+        timedAdDelay: 240000, // 4 minutes (240000 ms)
 
+        init: function() {
+            document.getElementById('banner-ad-id-display').innerText = `ID: ${this.ids.banner}`;
+            document.getElementById('interstitial-ad-id-display').innerText = `ID: ${this.ids.interstitial}\nReason: Placeholder`;
+            // Clear any existing interval before setting a new one
+            if (this.timedAdInterval) {
+                clearInterval(this.timedAdInterval);
+            }
+            this.timedAdInterval = setInterval(() => {
+                console.log(`Simulated ${this.timedAdDelay / 60000}-minute timer: Attempting to show interstitial.`);
+                const modalActive = document.getElementById('notes-mcq-modal')?.style.display === 'flex';
+                const interstitialOverlayActive = document.getElementById('simulated-interstitial-overlay')?.style.display === 'flex';
+                const nonAdScreens = ['language-selector-screen', 'splash-screen', 'login-screen']; // Screens where timed ad should not appear
+
+                if (!modalActive && !interstitialOverlayActive && !nonAdScreens.includes(currentScreenId)) {
+                    this.showInterstitial('Timed Ad Interval');
+                } else {
+                    console.log("Timed interstitial skipped due to active modal, existing interstitial, or critical screen.");
+                }
+            }, this.timedAdDelay);
+        },
+        showBanner: function(show = true) {
+            const bannerEl = document.getElementById('simulated-banner-ad');
+            if (bannerEl) bannerEl.style.display = show ? 'flex' : 'none';
+        },
+        showInterstitial: function(reason = "Triggered Ad") {
+            console.log(`Simulating Interstitial Ad. Reason: ${reason}. ID: ${this.ids.interstitial}`);
+            const interstitialIdEl = document.getElementById('interstitial-ad-id-display');
+            if (interstitialIdEl) interstitialIdEl.innerText = `ID: ${this.ids.interstitial}\nReason: ${reason}`;
+            const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay');
+            if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'flex';
+        },
+        hideInterstitial: function() {
+            const interstitialOverlayEl = document.getElementById('simulated-interstitial-overlay');
+            if (interstitialOverlayEl) interstitialOverlayEl.style.display = 'none';
+        },
+        triggerInterstitialIfNeeded: function(type) {
+            if (type === 'ai') {
+                this.aiQueryCount++;
+                if (this.aiQueryCount % 2 === 0) { // Show ad after every 2 AI queries
+                    this.showInterstitial(uiStrings[currentLanguage]?.after_2_ai_queries || "After 2 AI Queries");
+                }
+            } else if (type === 'mcq') {
+                 // mcqQuizCount can be incremented elsewhere if needed for "after X quizzes" logic.
+                 // For now, "After 1 MCQ Quiz" implies after *each* MCQ quiz submission.
+                this.showInterstitial(uiStrings[currentLanguage]?.after_1_mcq || "After 1 MCQ Quiz");
+            }
+        },
+        promptRewardedAd: function(rewardCallback) {
+            const rewardedAdIdText = (uiStrings[currentLanguage]?.rewarded_ad_prompt_part1 || `Simulated Rewarded Ad (ID: ${this.ids.rewarded}):\n\n`);
+            const promptText = (uiStrings[currentLanguage]?.rewarded_ad_prompt_part2 || `Would you like to watch an ad for a hint?`);
+            const proceed = confirm(rewardedAdIdText.replace("...", this.ids.rewarded) + promptText);
+            if (proceed) {
+                alert(uiStrings[currentLanguage]?.rewarded_ad_watched_sim || "Imagine you watched the ad.");
+                if (rewardCallback) rewardCallback();
+            }
+        },
+    };
 
     // --- User Data & Auth ---
     let currentUser = { name: "अतिथि", email: "", initials: "👤", quizzesCompleted: 0, totalMcqScore: 0, mcqsAttempted: 0 };
-    function getInitials(name) { /* ... Same ... */ if (!name || name.trim() === "") return "👤"; const words = name.split(' '); return (words.length > 1 && words[1]) ? (words[0][0] + words[1][0]).toUpperCase() : name[0].toUpperCase(); }
-    function updateUserSession(name, email = "") { /* ... Same as before, uses saveUserSession & updateUIAfterLogin ... */
+    function getInitials(name) { if (!name || name.trim() === "") return "👤"; const words = name.split(' '); return (words.length > 1 && words[1]) ? (words[0][0] + words[1][0]).toUpperCase() : name[0].toUpperCase(); }
+    function updateUserSession(name, email = "") {
         currentUser.name = name; currentUser.email = email; currentUser.initials = getInitials(name);
         const storedProgress = JSON.parse(localStorage.getItem('userProgress'));
         if (storedProgress && storedProgress.name === name) { currentUser.quizzesCompleted = storedProgress.quizzesCompleted || 0; currentUser.totalMcqScore = storedProgress.totalMcqScore || 0; currentUser.mcqsAttempted = storedProgress.mcqsAttempted || 0;
         } else { currentUser.quizzesCompleted = 0; currentUser.totalMcqScore = 0; currentUser.mcqsAttempted = 0; }
         saveUserSession(); updateUIAfterLogin();
     }
-    function saveUserSession() { /* ... Same ... */ localStorage.setItem('userName', currentUser.name); localStorage.setItem('userEmail', currentUser.email); localStorage.setItem('userInitials', currentUser.initials); localStorage.setItem('userProgress', JSON.stringify({ name: currentUser.name, quizzesCompleted: currentUser.quizzesCompleted, totalMcqScore: currentUser.totalMcqScore, mcqsAttempted: currentUser.mcqsAttempted })); }
-    function updateUIAfterLogin() { /* ... Same as previous version, uses applyTranslations ... */
+    function saveUserSession() { localStorage.setItem('userName', currentUser.name); localStorage.setItem('userEmail', currentUser.email); localStorage.setItem('userInitials', currentUser.initials); localStorage.setItem('userProgress', JSON.stringify({ name: currentUser.name, quizzesCompleted: currentUser.quizzesCompleted, totalMcqScore: currentUser.totalMcqScore, mcqsAttempted: currentUser.mcqsAttempted })); }
+    function updateUIAfterLogin() {
         const greetingEl = document.getElementById('dashboard-greeting');
         if (greetingEl) {
            greetingEl.innerText = (uiStrings[currentLanguage]?.greeting_user || "Hello, {userName}!").replace("{userName}", currentUser.name);
@@ -487,9 +558,9 @@
              const avgScore = currentUser.mcqsAttempted > 0 ? Math.round((currentUser.totalMcqScore / currentUser.mcqsAttempted) * 100) : 0;
              profileAvgScoreEl.innerText = `${avgScore}%`;
         }
-        applyTranslations(); // Crucial to update all keyed elements after dynamic content is set
+        applyTranslations();
     }
-    function loadUserSession() { /* ... Same as previous, loads progress ... */
+    function loadUserSession() {
         const storedName = localStorage.getItem('userName');
         if (storedName) {
             const storedEmail = localStorage.getItem('userEmail'); const storedInitials = localStorage.getItem('userInitials');
@@ -497,21 +568,22 @@
             const storedProgress = JSON.parse(localStorage.getItem('userProgress'));
             if (storedProgress && storedProgress.name === storedName) { currentUser.quizzesCompleted = storedProgress.quizzesCompleted || 0; currentUser.totalMcqScore = storedProgress.totalMcqScore || 0; currentUser.mcqsAttempted = storedProgress.mcqsAttempted || 0;
             } else { currentUser.quizzesCompleted = 0; currentUser.totalMcqScore = 0; currentUser.mcqsAttempted = 0; }
-            updateUIAfterLogin(); // Ensure UI reflects loaded data immediately
+            updateUIAfterLogin();
             return true;
         } return false;
     }
-    function handleGoogleSignIn() { const name = prompt((uiStrings[currentLanguage] && uiStrings[currentLanguage].google_prompt_name || "For Google Sign-In, please enter your name:"), (uiStrings[currentLanguage] && uiStrings[currentLanguage].student_placeholder || "Dear Student")); if (name && name.trim() !== "") { const email = name.trim().toLowerCase().replace(/\s+/g, '.') + "@example.com"; updateUserSession(name.trim(), email); navigateTo('home-dashboard'); } else { alert((uiStrings[currentLanguage] && uiStrings[currentLanguage].name_required_alert) || "Name is required."); } }
     uiStrings.hi.google_prompt_name = "Google साइन-इन के लिए, कृपया अपना नाम दर्ज करें:"; uiStrings.en.google_prompt_name = "For Google Sign-In, please enter your name:";
     uiStrings.hi.student_placeholder = "प्रिय छात्र"; uiStrings.en.student_placeholder = "Dear Student";
     uiStrings.hi.name_required_alert = "नाम आवश्यक है।"; uiStrings.en.name_required_alert = "Name is required.";
-    function handleGuestLogin() { updateUserSession((uiStrings[currentLanguage] && uiStrings[currentLanguage].guest_name) || "Guest"); navigateTo('home-dashboard'); }
     uiStrings.hi.guest_name = "अतिथि"; uiStrings.en.guest_name = "Guest";
-    function handleLogout() { /* ... Same ... */ localStorage.removeItem('userName'); localStorage.removeItem('userEmail'); localStorage.removeItem('userInitials'); localStorage.removeItem('userProgress'); currentUser = { name: (uiStrings[currentLanguage] && uiStrings[currentLanguage].guest_name) || "Guest", email: "", initials: "👤", quizzesCompleted: 0, totalMcqScore: 0, mcqsAttempted: 0 }; updateUIAfterLogin(); navigateTo('login-screen'); }
+
+    function handleGoogleSignIn() { const name = prompt(uiStrings[currentLanguage]?.google_prompt_name || "For Google Sign-In, please enter your name:", uiStrings[currentLanguage]?.student_placeholder || "Dear Student"); if (name && name.trim() !== "") { const email = name.trim().toLowerCase().replace(/\s+/g, '.') + "@example.com"; updateUserSession(name.trim(), email); navigateTo('home-dashboard'); } else { alert(uiStrings[currentLanguage]?.name_required_alert || "Name is required."); } }
+    function handleGuestLogin() { updateUserSession(uiStrings[currentLanguage]?.guest_name || "Guest"); navigateTo('home-dashboard'); }
+    function handleLogout() { localStorage.removeItem('userName'); localStorage.removeItem('userEmail'); localStorage.removeItem('userInitials'); localStorage.removeItem('userProgress'); currentUser = { name: (uiStrings[currentLanguage]?.guest_name || "Guest"), email: "", initials: "👤", quizzesCompleted: 0, totalMcqScore: 0, mcqsAttempted: 0 }; updateUIAfterLogin(); navigateTo('login-screen'); }
 
 
-    // --- NCERT Data ---
-    const ncert_data = { /* ... Same extensive ncert_data with 'hi' and 'en' keys from previous response ... */
+    // --- NCERT Data (remains the same as provided) ---
+    const ncert_data = {
         hi: {
             science: { subjectNameKey:"science_subj_hi", subjectName: "विज्ञान", chapters: [ { id: "sci_ch1", titleKey: "sci_ch1_hi", title: "हमारे आस-पास के पदार्थ", notes: ["पदार्थ कणों से मिलकर बना होता है।", "पदार्थ की तीन अवस्थाएँ: ठोस, द्रव, गैस।", "गलनांक, क्वथनांक।", "वाष्पीकरण शीतलता प्रदान करता है।"], aiKeyPoints: ["पदार्थ छोटे कणों से बनता है।","कणों के बीच खाली स्थान होता है।","कण लगातार चलते रहते हैं।","तापमान बढ़ने पर कणों की गति तेज हो जाती है।"], mcqs: [ { q: "पदार्थ की कितनी मुख्य अवस्थाएँ होती हैं?", o: ["एक", "दो", "तीन", "चार"], a: 2, expl: "पदार्थ की तीन मुख्य अवस्थाएँ ठोस, द्रव और गैस हैं。" }, { q: "किस अवस्था में कणों के बीच आकर्षण बल सबसे अधिक होता है?", o: ["ठोस", "द्रव", "गैस", "प्लाज्मा"], a: 0, expl: "ठोस अवस्था में कण निकटतम होते हैं और आकर्षण बल सबसे मजबूत होता है।" }, { q: "पानी का क्वथनांक (Boiling Point) सेल्सियस में कितना होता है?", o: ["0°C", "100°C", "37°C", "273°C"], a: 1, expl: "सामान्य दाब पर पानी 100°C पर उबलता है。" }, { q: "गैसों को द्रवित किया जा सकता है:", o: ["केवल दाब बढ़ाकर", "केवल ताप घटाकर", "दाब बढ़ाकर और ताप घटाकर", "इनमें से कोई नहीं"], a: 2, expl: "गैसों को दाब बढ़ाकर और ताप घटाकर द्रवित किया जा सकता है。" }, { q: "वाष्पीकरण से क्या होता है?", o: ["गर्मी", "ठंडक", "कोई परिवर्तन नहीं", "पहले गर्मी फिर ठंडक"], a: 1, expl: "वाष्पीकरण एक शीतलन प्रक्रिया है क्योंकि उच्च ऊर्जा वाले कण सतह छोड़ देते हैं。" }, { q: "पदार्थ के कण निरंतर ____ होते हैं।", o: ["स्थिर", "गतिशील", "उदासीन", "भारी"], a: 1, expl: "पदार्थ के कण निरंतर गतिशील रहते हैं, जिसे ब्राउनी गति भी कहते हैं।" }, { q: "बर्फ का गलनांक केल्विन में क्या है?", o: ["0 K", "100 K", "273 K", "373 K"], a: 2, expl: "बर्फ का गलनांक 0°C होता है, जो 273 K (लगभग) के बराबर है。" }, ]}, { id: "sci_ch2", titleKey: "sci_ch2_hi", title: "क्या हमारे आस-पास के पदार्थ शुद्ध हैं?", notes: ["मिश्रण और यौगिक।"], mcqs: [ { q: "निलंबन का एक उदाहरण है:", o: ["नमक का पानी", "दूध", "मिट्टी का पानी", "चीनी का घोल"], a: 2, expl: "मिट्टी का पानी निलंबन का उदाहरण है।" }, { q: "टिंडल प्रभाव किसमें देखा जाता है?", o: ["वास्तविक विलयन", "कोलाइडल विलयन", "निलंबन", "इन सभी में"], a: 1, expl: "टिंडल प्रभाव कोलाइडल कणों द्वारा प्रकाश के प्रकीर्णन के कारण होता है。" } ] } ]},
             maths: { subjectNameKey:"maths_subj_hi", subjectName: "गणित", chapters: [{ id: "math_ch1", titleKey: "math_ch1_hi", title: "संख्या पद्धति", notes: ["परिमेय और अपरिमेय संख्याएँ।"], mcqs: [{ q: "√2 क्या है?", o: ["परिमेय", "अपरिमेय"], a: 1, expl: "√2 अपरिमेय है।" }] }, { id: "math_ch2", titleKey: "math_ch2_hi", title: "बहुपद", notes: ["बहुपदों के शून्यक।"], mcqs: [{ q: "p(x) = x + 5 का शून्यक?", o: ["5", "-5"], a: 1, expl: "x = -5" }] } ]},
@@ -526,13 +598,14 @@
         }
     };
 
+
     // Variables for features
     let currentQuizData = { questions: [], userAnswers: [], currentChapterId: null };
     let eli5ModeActive = false;
     let matchGameData = {};
     let selectedMatchItem = { column: null, index: -1, element: null };
     // --- Match the Columns Game Logic ---
-    function setupMatchGame(gameId) { /* ... Same setupMatchGame ... */
+    function setupMatchGame(gameId) {
         const lang = currentLanguage;
         if (gameId === 'sci_ch1_match') {
             matchGameData = {
@@ -549,48 +622,48 @@
         const submitBtn = document.getElementById('match-game-submit'); if(submitBtn) submitBtn.style.display = 'block';
         const feedbackEl = document.getElementById('match-game-feedback'); if(feedbackEl) feedbackEl.innerText = '';
     }
-    function renderMatchColumns() { /* ... Same, uses matchGameData.columnA/B[i].text directly ... */
+    function renderMatchColumns() {
         const colA_div = document.getElementById('match-column-a');
         const colB_div = document.getElementById('match-column-b');
-        if(!colA_div || !colB_div) return; // Guard if elements not found
+        if(!colA_div || !colB_div) return; 
         colA_div.innerHTML = `<h4 data-translate-key="column_a">${uiStrings[currentLanguage]?.column_a || 'Column A'}</h4>`;
         colB_div.innerHTML = `<h4 data-translate-key="column_b">${uiStrings[currentLanguage]?.column_b || 'Column B'}</h4>`;
         const shuffledB = [...matchGameData.columnB].sort(() => Math.random() - 0.5);
         matchGameData.columnA.forEach((item, index) => { const itemEl = document.createElement('div'); itemEl.classList.add('match-item'); itemEl.dataset.id = item.id; itemEl.dataset.matchId = item.matchId; itemEl.dataset.columnIndex = 0; itemEl.dataset.itemIndex = index; itemEl.textContent = item.text; itemEl.onclick = () => selectMatchGameItem(itemEl, 0, index); colA_div.appendChild(itemEl); });
         shuffledB.forEach((item, index) => { const itemEl = document.createElement('div'); itemEl.classList.add('match-item'); itemEl.dataset.id = item.id; itemEl.dataset.columnIndex = 1; itemEl.dataset.itemIndex = matchGameData.columnB.findIndex(origB => origB.id === item.id); itemEl.textContent = item.text; itemEl.onclick = () => selectMatchGameItem(itemEl, 1, itemEl.dataset.itemIndex); colB_div.appendChild(itemEl); });
     }
-    function selectMatchGameItem(element, colIndex, itemIndexOriginal) { /* ... Same logic ... */
+    function selectMatchGameItem(element, colIndex, itemIndexOriginal) {
         if (element.classList.contains('matched-correct') || element.classList.contains('matched-incorrect')) return;
         if (selectedMatchItem.element) {
-            if (selectedMatchItem.column !== colIndex) { // Selected from other column
+            if (selectedMatchItem.column !== colIndex) { 
                 element.classList.add('selected');
-                 // We visually link the A item with B's ID/text on the A item directly
-                if (selectedMatchItem.element.dataset.columnIndex === "0") { // If selectedMatchItem is Col A
+                if (selectedMatchItem.element.dataset.columnIndex === "0") { 
                      selectedMatchItem.element.dataset.pairedWith = element.dataset.id;
                      const originalTextA = matchGameData.columnA.find(it => it.id === selectedMatchItem.element.dataset.id)?.text || '';
                      selectedMatchItem.element.innerHTML = `${originalTextA} <span style="color: ${selectedMatchItem.element.classList.contains('selected')? 'white': 'var(--pw-blue)'}; font-weight:normal;"> \u2194 ${element.textContent.substring(0,10)}...</span>`;
-                } else { // If selectedMatchItem is Col B, means current element is Col A
+                } else { 
                     element.dataset.pairedWith = selectedMatchItem.element.dataset.id;
                     const originalTextA_current = matchGameData.columnA.find(it => it.id === element.dataset.id)?.text || '';
                     element.innerHTML = `${originalTextA_current} <span style="color: ${element.classList.contains('selected')? 'white': 'var(--pw-blue)'}; font-weight:normal;"> \u2194 ${selectedMatchItem.element.textContent.substring(0,10)}...</span>`;
                 }
-                setTimeout(() => { // Clear selection highlight but keep the text linkage
-                    selectedMatchItem.element?.classList.remove('selected'); // Null check
+                setTimeout(() => { 
+                    selectedMatchItem.element?.classList.remove('selected'); 
                     element.classList.remove('selected');
                     selectedMatchItem = { column: null, index: -1, element: null };
                 }, 300);
-            } else { // Selected from same column again
-                selectedMatchItem.element.classList.remove('selected'); // Remove from old
-                element.classList.add('selected'); // Add to new
+            } else { 
+                selectedMatchItem.element.classList.remove('selected'); 
+                element.classList.add('selected'); 
                 selectedMatchItem = { column: colIndex, index: itemIndexOriginal, element: element };
             }
-        } else { // First item selected
+        } else { 
             element.classList.add('selected');
             selectedMatchItem = { column: colIndex, index: itemIndexOriginal, element: element };
         }
     }
-    function resetMatchGame() { /* ... Same, calls setupMatchGame ... */ setupMatchGame(navigationParams.gameId || 'sci_ch1_match');}
-    function submitMatchGame() { /* ... Same ... */
+    function resetMatchGame() { setupMatchGame(navigationParams.gameId || 'sci_ch1_match');}
+    uiStrings.hi.your_score = "आपका स्कोर"; uiStrings.en.your_score = "Your Score";
+    function submitMatchGame() {
         let correctMatches = 0;
         const colA_items = document.querySelectorAll('#match-column-a .match-item');
         colA_items.forEach(itemA => {
@@ -604,14 +677,12 @@
         if(feedbackDiv) feedbackDiv.textContent = `${uiStrings[currentLanguage]?.your_score || 'Your Score'}: ${correctMatches} / ${matchGameData.columnA.length}`;
         const submitBtn = document.getElementById('match-game-submit'); if(submitBtn) submitBtn.style.display = 'none';
     }
-    uiStrings.hi.your_score = "आपका स्कोर"; uiStrings.en.your_score = "Your Score";
+    
 
     // --- Navigation & Content Population ---
-    // navigateTo function: Use the refined version from previous response.
-    // Key parts: handles splash timeout, updates translations on navigation.
     function navigateTo(screenId, params = {}) {
         console.log(`Navigating to: ${screenId}. Current: ${currentScreenId}`);
-        adManager.hideInterstitial();
+        adManager.hideInterstitial(); // Hide any active interstitial first
 
         const oldScreen = document.getElementById(currentScreenId);
         if (oldScreen) { oldScreen.classList.remove('active'); console.log(`Deactivated: ${currentScreenId}`); }
@@ -620,10 +691,14 @@
         const newScreen = document.getElementById(screenId);
         if (newScreen) {
             previousScreenId = currentScreenId; currentScreenId = screenId; navigationParams = params || {};
-            const noBannerScreens = ['language-selector-screen', 'splash-screen', 'login-screen'];
+            // Updated list of screens that should NOT have a banner ad by default
+            const noBannerScreens = ['language-selector-screen', 'splash-screen', 'login-screen', 'home-dashboard']; 
             adManager.showBanner(!noBannerScreens.includes(screenId));
+            
             newScreen.classList.remove('no-banner-adjustment');
-            if (noBannerScreens.includes(screenId)) { newScreen.classList.add('no-banner-adjustment'); }
+            if (noBannerScreens.includes(screenId)) { 
+                newScreen.classList.add('no-banner-adjustment'); 
+            }
             newScreen.classList.add('active'); console.log(`Activated: ${screenId}`); window.scrollTo(0,0);
 
             if (screenId === 'splash-screen') {
@@ -640,19 +715,33 @@
                 const langData = ncert_data[currentLanguage] || ncert_data.hi;
                 const subjectData = langData[params.subjectKey];
                 populateChapterList(params.subjectKey, subjectData?.subjectName || params.subjectKey, params.subjectNameKey);
-                const backBtn = document.getElementById('chapter-detail-back-button'); if(backBtn) backBtn.onclick = () => navigateTo('chapter-list-screen', { subjectKey: params.subjectKey, subjectNameKey: params.subjectNameKey });
+                // Back button functionality should be specific for chapter detail
+                 const chapterDetailBackBtn = document.getElementById('chapter-detail-back-button');
+                 if(chapterDetailBackBtn) chapterDetailBackBtn.onclick = () => navigateTo('chapter-list-screen', { subjectKey: params.subjectKey, subjectNameKey: params.subjectNameKey });
+
             }
             if (screenId === 'chapter-detail-screen' && params && params.chapter) {
                 const langData = ncert_data[currentLanguage] || ncert_data.hi;
-                const subjectKey = navigationParams.subjectKey; // Important: Use the subjectKey stored in navigationParams from previous screen
+                const subjectKey = navigationParams.subjectKey; 
                 const chapterData = langData[subjectKey]?.chapters.find(c => c.id === params.chapter.id) || params.chapter;
                 const chapterTitle = chapterData.title;
                 const detailTitleEl = document.getElementById('chapter-detail-title'); if(detailTitleEl) detailTitleEl.innerText = chapterTitle;
-                params.chapter = chapterData; // Update params to use potentially localized data
-                document.getElementById('view-notes-button').onclick = () => showNotesModal(params.chapter);
-                document.getElementById('view-ai-keys-button').onclick = () => showAIKeyPointsModal(params.chapter);
-                document.getElementById('practice-mcqs-button').onclick = () => startMcqQuiz(params.chapter);
-                document.getElementById('ask-doubt-button').onclick = () => navigateTo('ai-chat-screen', { context: chapterTitle }); // Simplified context passing
+                
+                // Ensure params.chapter is updated with localized data if necessary
+                const currentChapterDataForDetail = langData[subjectKey]?.chapters.find(c => c.id === params.chapter.id) || params.chapter;
+
+                document.getElementById('view-notes-button').onclick = () => showNotesModal(currentChapterDataForDetail);
+                document.getElementById('view-ai-keys-button').onclick = () => showAIKeyPointsModal(currentChapterDataForDetail);
+                document.getElementById('practice-mcqs-button').onclick = () => startMcqQuiz(currentChapterDataForDetail);
+                document.getElementById('ask-doubt-button').onclick = () => navigateTo('ai-chat-screen', { context: currentChapterDataForDetail.title });
+                 // Set back button for chapter detail screen to go back to chapter list with correct context
+                const chapterDetailBackBtn = document.getElementById('chapter-detail-back-button');
+                if (chapterDetailBackBtn && navigationParams.subjectKey && navigationParams.subjectNameKey) {
+                    chapterDetailBackBtn.onclick = () => navigateTo('chapter-list-screen', {
+                        subjectKey: navigationParams.subjectKey,
+                        subjectNameKey: navigationParams.subjectNameKey
+                    });
+                }
             }
             if (screenId === 'ai-chat-screen' && params && params.context) {
                 const inputField = document.getElementById('chat-input-field');
@@ -664,12 +753,17 @@
             updateUIAfterLogin(); // This calls applyTranslations
         } else { console.error(`New screen element not found for ID: ${screenId}`); }
     }
-    function goBackToPreviousScreenOr(defaultScreenId) { /* Same */ if (previousScreenId && previousScreenId !== currentScreenId) { navigateTo(previousScreenId, navigationParams); } else { navigateTo(defaultScreenId); } }
-    function initializeSubjectScreen() { /* ... Use currentLanguage ... */
+    function goBackToPreviousScreenOr(defaultScreenId) { if (previousScreenId && previousScreenId !== currentScreenId) { navigateTo(previousScreenId, navigationParams); } else { navigateTo(defaultScreenId); } }
+    uiStrings.hi.no_chapters_available = "इस विषय के लिए अध्याय उपलब्ध नहीं हैं।"; uiStrings.en.no_chapters_available = "No chapters available for this subject.";
+    function initializeSubjectScreen() {
         const subjectListContent = document.getElementById('subject-list-content'); subjectListContent.innerHTML = '';
-        const subjects = ncert_data[currentLanguage] || ncert_data.hi;
-        Object.keys(subjects).forEach(subjectKey => {
-            const subject = subjects[subjectKey]; if(!subject.subjectName) return; // Skip if malformed
+        const subjectsData = ncert_data[currentLanguage] || ncert_data.hi;
+        Object.keys(subjectsData).forEach(subjectKey => {
+            const subject = subjectsData[subjectKey]; 
+            if(!subject.subjectName) {
+                console.warn("Subject missing name in data:", subjectKey, subject);
+                return; 
+            }
             const iconMap = { science: '🔬', maths: '🧮', social_science: '🌍', hindi: '✍️' };
             const card = document.createElement('div'); card.classList.add('list-item-card');
             card.innerHTML = `<div class="icon">${iconMap[subjectKey] || '📚'}</div><div class="title">${subject.subjectName}</div><div class="arrow">→</div>`;
@@ -677,32 +771,55 @@
             subjectListContent.appendChild(card);
         });
     }
-    function populateChapterList(subjectKey, subjectNameFromParam, subjectNameKeyParam) { /* ... Use currentLanguage ... */
+    function populateChapterList(subjectKey, subjectNameFromParam, subjectNameKeyParam) {
         const chapterListContainer = document.getElementById('chapter-list-items');
         const chapterListTitle = document.getElementById('chapter-list-title');
         if (!chapterListContainer || !chapterListTitle) return;
         chapterListContainer.innerHTML = '';
-        chapterListTitle.innerText = `${subjectNameFromParam} - ${(uiStrings[currentLanguage] && uiStrings[currentLanguage].chapters_title) || "Chapters"}`;
+        const localizedChaptersTitle = (uiStrings[currentLanguage] && uiStrings[currentLanguage].chapters_title) || "Chapters";
+        chapterListTitle.innerText = `${subjectNameFromParam} - ${localizedChaptersTitle}`;
         const subjectData = (ncert_data[currentLanguage] && ncert_data[currentLanguage][subjectKey]) || (ncert_data.hi && ncert_data.hi[subjectKey]);
+        
         if (subjectData && subjectData.chapters) {
             subjectData.chapters.forEach(chapter => {
                 const card = document.createElement('div'); card.classList.add('list-item-card');
                 card.innerHTML = `<div class="icon">📖</div><div class="title">${chapter.title}</div><div class="arrow">→</div>`;
                 const targetFeature = localStorage.getItem('targetFeatureAfterSubject');
-                if (targetFeature) { if (targetFeature === 'notes') card.onclick = () => showNotesModal(chapter); else if (targetFeature === 'mcq') card.onclick = () => startMcqQuiz(chapter); }
-                else { card.onclick = () => navigateTo('chapter-detail-screen', { chapter: chapter, subjectKey: subjectKey, subjectNameKey:subjectNameKeyParam, chapterTitleKey: chapter.titleKey }); }
+                if (targetFeature) { 
+                    if (targetFeature === 'notes') card.onclick = () => showNotesModal(chapter); 
+                    else if (targetFeature === 'mcq') card.onclick = () => startMcqQuiz(chapter); 
+                }
+                else { 
+                    // Store subjectKey and subjectNameKey in navigationParams for back button from chapter-detail
+                    card.onclick = () => navigateTo('chapter-detail-screen', { 
+                        chapter: chapter, 
+                        subjectKey: subjectKey, 
+                        subjectNameKey: subjectNameKeyParam, // Pass this on
+                        chapterTitleKey: chapter.titleKey 
+                    }); 
+                }
                 chapterListContainer.appendChild(card);
             });
         } else { chapterListContainer.innerHTML = `<p>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_chapters_available) || "No chapters available for this subject."}</p>`; }
     }
-     uiStrings.hi.no_chapters_available = "इस विषय के लिए अध्याय उपलब्ध नहीं हैं।"; uiStrings.en.no_chapters_available = "No chapters available for this subject.";
 
     // --- Modal (Notes, AI Keys, MCQ) Logic ---
     const modal = document.getElementById('notes-mcq-modal'); const modalTitle = document.getElementById('modal-title'); const modalBody = document.getElementById('modal-body'); const modalExtraControls = document.getElementById('modal-extra-controls'); const mcqSubmitBtn = document.getElementById('mcq-submit-button'); const mcqFinalScoreDiv = document.getElementById('mcq-final-score');
-    function showNotesModal(chapter) { /* ... Add Audio Button, use currentLanguage ... */
+    uiStrings.hi.no_notes_available = "इस अध्याय के लिए नोट्स उपलब्ध नहीं हैं।"; uiStrings.en.no_notes_available = "Notes not available for this chapter.";
+    uiStrings.hi.no_aikeys_available = "इस अध्याय के लिए AI मुख्य बिंदु उपलब्ध नहीं हैं।"; uiStrings.en.no_aikeys_available = "AI Key points not available for this chapter.";
+    uiStrings.hi.practice_label = "अभ्यास"; uiStrings.en.practice_label = "Practice";
+    uiStrings.hi.no_mcqs_available = "इस अध्याय के लिए MCQ उपलब्ध नहीं हैं।"; uiStrings.en.no_mcqs_available = "No MCQs available for this chapter.";
+    uiStrings.hi.get_hint_btn = "संकेत पाएं"; uiStrings.en.get_hint_btn = "Get Hint";
+    uiStrings.hi.hint_label = "संकेत"; uiStrings.en.hint_label = "Hint";
+    uiStrings.hi.hint_received_btn = "संकेत प्राप्त"; uiStrings.en.hint_received_btn = "Hint Received";
+    uiStrings.hi.correct_feedback = "सही!"; uiStrings.en.correct_feedback = "Correct!";
+    uiStrings.hi.incorrect_feedback = "गलत।"; uiStrings.en.incorrect_feedback = "Incorrect.";
+    uiStrings.hi.correct_answer_is = "सही उत्तर"; uiStrings.en.correct_answer_is = "Correct answer";
+    
+    function showNotesModal(chapter) {
         modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage]?.notes_tile || 'Notes'}`;
         let notesHtml = '<ul>';
-        const chapterNotes = chapter.notes || []; // Use localized notes if available in `chapter` object from `navigateTo`
+        const chapterNotes = chapter.notes || []; 
         if (chapterNotes.length > 0) { chapterNotes.forEach(note => { notesHtml += `<li>${note}</li>`; }); }
         else { notesHtml += `<li>${(uiStrings[currentLanguage] && uiStrings[currentLanguage].no_notes_available) || "Notes not available for this chapter."}</li>`; }
         notesHtml += '</ul>';
@@ -711,13 +828,12 @@
         if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display = 'none';
         modal.style.display = "flex";
     }
-     uiStrings.hi.no_notes_available = "इस अध्याय के लिए नोट्स उपलब्ध नहीं हैं।"; uiStrings.en.no_notes_available = "Notes not available for this chapter.";
-    function playAudioNotes(textToSpeak) { /* ... Same ... */
+    function playAudioNotes(textToSpeak) {
         alert(uiStrings[currentLanguage]?.audio_playing_sim || "Playing audio (simulation)...");
         if ('speechSynthesis' in window && textToSpeak) { const utterance = new SpeechSynthesisUtterance(textToSpeak.substring(0, 200)); utterance.lang = currentLanguage === 'hi' ? 'hi-IN' : 'en-US'; speechSynthesis.speak(utterance); }
         else { console.log("Speech synthesis not supported or no text."); }
     }
-    function showAIKeyPointsModal(chapter) { /* ... Use currentLanguage ... */
+    function showAIKeyPointsModal(chapter) {
         modalTitle.innerText = `${chapter.title} - ${uiStrings[currentLanguage]?.ai_keys_title_modal || "Key Points (AI)"}`;
         let pointsHtml = '<ul>';
         const chapterAIKeyPoints = chapter.aiKeyPoints || [];
@@ -728,9 +844,8 @@
         if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display = 'none';
         modal.style.display = "flex";
     }
-     uiStrings.hi.no_aikeys_available = "इस अध्याय के लिए AI मुख्य बिंदु उपलब्ध नहीं हैं।"; uiStrings.en.no_aikeys_available = "AI Key points not available for this chapter.";
-    function startMcqQuiz(chapter) { /* ... Use currentLanguage for MCQs ... */
-        const chapterData = chapter; // chapter object should already be language specific from navigateTo
+    function startMcqQuiz(chapter) {
+        const chapterData = chapter; 
         currentQuizData.questions = chapterData.mcqs || [];
         currentQuizData.userAnswers = new Array(currentQuizData.questions.length).fill(null); currentQuizData.currentChapterId = chapterData.id;
         modalTitle.innerText = `${chapterData.title} - MCQ ${(uiStrings[currentLanguage] && uiStrings[currentLanguage].practice_label) || "Practice"}`;
@@ -741,17 +856,12 @@
             modalBody.appendChild(itemDiv); });
         if(mcqSubmitBtn) mcqSubmitBtn.style.display = 'block'; modal.style.display = "flex";
     }
-    uiStrings.hi.practice_label = "अभ्यास"; uiStrings.en.practice_label = "Practice";
-    uiStrings.hi.no_mcqs_available = "इस अध्याय के लिए MCQ उपलब्ध नहीं हैं।"; uiStrings.en.no_mcqs_available = "No MCQs available for this chapter.";
-    uiStrings.hi.get_hint_btn = "संकेत पाएं"; uiStrings.en.get_hint_btn = "Get Hint";
-    function selectMcqOption(optionElement, questionIndex, optionIndex) { /* Same */ currentQuizData.userAnswers[questionIndex] = optionIndex; const optionsContainer = optionElement.parentElement; Array.from(optionsContainer.children).forEach(child => child.classList.remove('selected')); optionElement.classList.add('selected'); }
-    function showHint(questionIndex) { /* Same, but get explanation in current language */
+    function selectMcqOption(optionElement, questionIndex, optionIndex) { currentQuizData.userAnswers[questionIndex] = optionIndex; const optionsContainer = optionElement.parentElement; Array.from(optionsContainer.children).forEach(child => child.classList.remove('selected')); optionElement.classList.add('selected'); }
+    function showHint(questionIndex) {
         const mcq = currentQuizData.questions[questionIndex];
         if (mcq) { alert(`${(uiStrings[currentLanguage] && uiStrings[currentLanguage].hint_label) || "Hint"}: ${mcq.expl}`); const hintButton = document.getElementById(`rewarded-ad-btn-${questionIndex}`); if(hintButton) { hintButton.innerText = (uiStrings[currentLanguage] && uiStrings[currentLanguage].hint_received_btn) || "Hint Received"; hintButton.disabled = true; } }
     }
-    uiStrings.hi.hint_label = "संकेत"; uiStrings.en.hint_label = "Hint";
-    uiStrings.hi.hint_received_btn = "संकेत प्राप्त"; uiStrings.en.hint_received_btn = "Hint Received";
-    function submitMcqQuiz() { /* ... Use currentLanguage for feedback text ... */
+    function submitMcqQuiz() {
         let score = 0;
         currentQuizData.questions.forEach((mcq, index) => {
             const feedbackDiv = document.getElementById(`mcq-feedback-${index}`); const optionsDivs = document.querySelector(`.mcq-options[data-qindex="${index}"]`).children;
@@ -764,28 +874,107 @@
         currentUser.quizzesCompleted++; currentUser.totalMcqScore += score; currentUser.mcqsAttempted += currentQuizData.questions.length; saveUserSession(); updateUIAfterLogin();
         adManager.triggerInterstitialIfNeeded('mcq');
     }
-    uiStrings.hi.correct_feedback = "सही!"; uiStrings.en.correct_feedback = "Correct!";
-    uiStrings.hi.incorrect_feedback = "गलत।"; uiStrings.en.incorrect_feedback = "Incorrect.";
-    uiStrings.hi.correct_answer_is = "सही उत्तर"; uiStrings.en.correct_answer_is = "Correct answer";
     function closeModal() { modal.style.display = "none"; modalBody.innerHTML = ""; if(mcqSubmitBtn) mcqSubmitBtn.style.display='none'; if(mcqFinalScoreDiv) mcqFinalScoreDiv.style.display='none'; }
     window.onclick = function(event) { if (event.target == modal) { closeModal(); } }
 
-    // --- AI Chat with ELI5 ---
-    function toggleEli5Mode(isEli5) { /* Same */ eli5ModeActive = isEli5; console.log("ELI5 Mode: " + (eli5ModeActive ? "ON" : "OFF")); }
-    function sendChatMessage() { /* ... Use currentLanguage ... */
-        const inputField = document.getElementById('chat-input-field'); const messageText = inputField.value.trim(); if (messageText === "") return; const chatMessagesContainer = document.getElementById('chat-messages-container'); const userMessageDiv = document.createElement('div'); userMessageDiv.classList.add('message', 'user-message'); userMessageDiv.textContent = messageText; chatMessagesContainer.appendChild(userMessageDiv); inputField.value = ""; adManager.triggerInterstitialIfNeeded('ai');
-        setTimeout(() => {
-            const aiResponseDiv = document.createElement('div'); aiResponseDiv.classList.add('message', 'ai-message');
-            let simulatedPromptPrefix = eli5ModeActive ? (currentLanguage === 'hi' ? "मुझे यह बिलकुल आसान शब्दों में समझाओ जैसे मैं 5 साल का हूँ: " : "Explain this to me in very simple terms like I'm 5 years old: ") : (currentLanguage === 'hi' ? "कक्षा 9 के शिक्षक के रूप में, मैं आपको इस तरह समझाऊंगा: " : "As a Class 9 teacher, I'll explain it this way: ");
-            let aiResponse = simulatedPromptPrefix;
-            if (messageText.toLowerCase().includes("प्रकाश संश्लेषण") || messageText.toLowerCase().includes("photosynthesis")) { aiResponse += (currentLanguage === 'hi' ? "प्रकाश संश्लेषण वह प्रक्रिया है जिसके द्वारा हरे पौधे सूर्य के प्रकाश, पानी और कार्बन डाइऑक्साइड का उपयोग करके अपना भोजन बनाते हैं।" : "Photosynthesis is the process by which green plants use sunlight, water, and carbon dioxide to create their own food."); }
-            else { aiResponse += (currentLanguage === 'hi' ? "यह एक दिलचस्प प्रश्न है! मैं अभी इस विशिष्ट विषय पर विस्तृत जानकारी नहीं दे सकता।" : "That's an interesting question! I may not have detailed info on that specific topic right now."); }
-            aiResponseDiv.textContent = aiResponse; chatMessagesContainer.appendChild(aiResponseDiv); chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-        }, 1000); chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-    }
+    // --- AI Chat with ELI5 & Gemini API ---
+    function toggleEli5Mode(isEli5) { eli5ModeActive = isEli5; console.log("ELI5 Mode: " + (eli5ModeActive ? "ON" : "OFF")); }
     
+    async function sendChatMessage() {
+        const inputField = document.getElementById('chat-input-field');
+        const messageText = inputField.value.trim();
+        if (messageText === "") return;
+
+        const chatMessagesContainer = document.getElementById('chat-messages-container');
+
+        // Display User Message
+        const userMessageDiv = document.createElement('div');
+        userMessageDiv.classList.add('message', 'user-message');
+        userMessageDiv.textContent = messageText;
+        chatMessagesContainer.appendChild(userMessageDiv);
+        inputField.value = "";
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+        adManager.triggerInterstitialIfNeeded('ai');
+
+        // Display AI Thinking Message
+        const aiThinkingDiv = document.createElement('div');
+        aiThinkingDiv.classList.add('message', 'ai-message', 'thinking');
+        aiThinkingDiv.textContent = uiStrings[currentLanguage]?.ai_thinking || "AI Guru is thinking...";
+        chatMessagesContainer.appendChild(aiThinkingDiv);
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+
+        // Construct Prompt for Gemini
+        let systemInstruction = `You are "Class 9 AI Guru", an expert AI assistant specialized in the Class 9 CBSE curriculum for students.
+        Your primary language for response should be ${currentLanguage === 'hi' ? 'Hindi (Devanagari script)' : 'English'}.
+        Answer questions accurately, clearly, and concisely, focusing on educational content relevant to Class 9 studies.
+        If the question seems unrelated to Class 9 studies or is too general, politely state that you specialize in Class 9 topics.
+        ${navigationParams.context ? `The user is currently asking about the chapter: "${navigationParams.context}". Keep this context in mind if relevant.` : ''}
+        `;
+        if (eli5ModeActive) {
+            systemInstruction += (currentLanguage === 'hi' ? "\nछात्र ने 'सरल भाषा में समझाएं (ELI5 Mode)' चुना है, इसलिए कृपया बहुत ही सरल शब्दों में और छोटे वाक्यों में समझाएं, जैसे किसी 5 साल के बच्चे को समझा रहे हों।" : "\nThe student has selected 'Explain Like I'm 5 (ELI5 Mode)', so please explain in very simple terms and short sentences, as if explaining to a 5-year-old.");
+        }
+        
+        const fullPrompt = `${systemInstruction}\n\nStudent's Question: "${messageText}"`;
+
+        try {
+            const response = await fetch(GEMINI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: fullPrompt }] }],
+                    generationConfig: {
+                        temperature: 0.6, // Adjust for creativity/factuality balance
+                        topK: 1,
+                        topP: 1,
+                        maxOutputTokens: 1024, // Limit response length
+                    },
+                    safetySettings: [ // Standard safety settings
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                    ]
+                })
+            });
+
+            aiThinkingDiv.remove(); // Remove "thinking" message
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Gemini API Error:', errorData);
+                throw new Error(errorData.error?.message || `API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            let aiResponseText = uiStrings[currentLanguage]?.ai_error || "Sorry, an error occurred.";
+
+            if (data.candidates && data.candidates.length > 0 && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
+                aiResponseText = data.candidates[0].content.parts[0].text;
+            } else if (data.promptFeedback && data.promptFeedback.blockReason) {
+                 aiResponseText = `Blocked due to: ${data.promptFeedback.blockReason}. ${ (data.promptFeedback.safetyRatings && data.promptFeedback.safetyRatings.length > 0) ? 'Category: '+data.promptFeedback.safetyRatings[0].category : '' }`;
+                 console.warn("AI Response Blocked:", data.promptFeedback);
+            }
+
+
+            const aiResponseDiv = document.createElement('div');
+            aiResponseDiv.classList.add('message', 'ai-message');
+            aiResponseDiv.textContent = aiResponseText;
+            chatMessagesContainer.appendChild(aiResponseDiv);
+
+        } catch (error) {
+            console.error("Error fetching AI response:", error);
+            if(aiThinkingDiv && aiThinkingDiv.parentNode) aiThinkingDiv.remove(); // Ensure "thinking" is removed on error too
+            const aiErrorDiv = document.createElement('div');
+            aiErrorDiv.classList.add('message', 'ai-message');
+            aiErrorDiv.textContent = uiStrings[currentLanguage]?.ai_error || "Sorry, AI Guru is unable to respond right now.";
+            chatMessagesContainer.appendChild(aiErrorDiv);
+        }
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    }
+
     // --- Calculator Logic ---
-    let calcDisplay; // Declared here, will be assigned in DOMContentLoaded
+    let calcDisplay; 
     let currentInput = '0'; let previousInput = ''; let operator = null;
     function clearDisplay() { currentInput = '0'; previousInput = ''; operator = null; updateDisplay(); }
     function deleteLast() { currentInput = currentInput.slice(0, -1); if (currentInput === '') currentInput = '0'; updateDisplay(); }
@@ -796,43 +985,37 @@
 
     // --- Initialization ---
     document.addEventListener('DOMContentLoaded', () => {
-        console.log("DOM Content Loaded. Fixing initial language setup.");
+        console.log("DOM Content Loaded. Initializing app.");
         const savedLang = localStorage.getItem('appLanguage');
         if (savedLang && uiStrings[savedLang]) { currentLanguage = savedLang; }
-        else { currentLanguage = 'hi'; } // Default if nothing saved or invalid
+        else { currentLanguage = 'hi'; } 
         document.documentElement.lang = currentLanguage;
         
-        // The language selector is "active" by default in HTML for the first load without saved lang.
-        // This call will translate it immediately.
-        applyTranslations();
+        applyTranslations(); // Apply translations first
 
-        calcDisplay = document.getElementById('calc-display'); // Assign calcDisplay
-        if(calcDisplay) updateDisplay(); // Initialize calculator display
+        calcDisplay = document.getElementById('calc-display'); 
+        if(calcDisplay) updateDisplay(); 
 
-        adManager.init();
+        adManager.init(); // Initialize ad manager, starts the timed ad interval
 
-        if (savedLang) { // If lang was saved, skip language selector screen.
+        if (savedLang) { 
             console.log("Saved language found:", savedLang, ". Navigating to splash screen.");
-            document.getElementById('language-selector-screen').classList.remove('active'); // Ensure it's not active
-            navigateTo('splash-screen'); // Splash will handle login/dashboard
+            document.getElementById('language-selector-screen').classList.remove('active'); 
+            navigateTo('splash-screen'); 
         } else {
-            // No saved language. Language selector is already active from HTML.
-            // Ensure other screens are not active.
              document.querySelectorAll('.screen:not(#language-selector-screen)').forEach(s => s.classList.remove('active'));
-            currentScreenId = 'language-selector-screen'; // Explicitly set for safety
+            document.getElementById('language-selector-screen').classList.add('active'); // Explicitly activate
+            currentScreenId = 'language-selector-screen'; 
             console.log("No saved language. Language selector screen active.");
-            adManager.showBanner(false);
+            adManager.showBanner(false); // No banner on language selector
         }
-        // This will be re-applied correctly after language is set and user info loaded
+        
         const motQuotes = uiStrings[currentLanguage]?.motivation_quotes_list || uiStrings.hi.motivation_quotes_list;
         const motQuoteEl = document.getElementById('daily-motivation-quote');
         if (motQuoteEl && motQuotes && motQuotes.length > 0) {
             motQuoteEl.innerText = motQuotes[Math.floor(Math.random() * motQuotes.length)];
         }
     });
-    // Adding motivation quotes to uiStrings for easier translation/management
-    uiStrings.hi.motivation_quotes_list = ["मेहनत का फल हमेशा मीठा होता है।", "शिक्षा सबसे शक्तिशाली हथियार है।", "आज की मेहनत कल की सफलता है।", "ज्ञान में किया गया निवेश सर्वोत्तम भुगतान करता है।"];
-    uiStrings.en.motivation_quotes_list = ["Hard work always pays off.", "Education is the most powerful weapon.", "Today's effort is tomorrow's success.", "An investment in knowledge pays the best interest."];
 
 </script>
 </body>
